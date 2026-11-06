@@ -5,6 +5,7 @@ import {
     Check,
     Command,
     Download,
+    FileCode,
     Flame,
     FolderGit2,
     GraduationCap,
@@ -52,6 +53,12 @@ const features = [
         title: 'Career, on your terms',
         description:
             'Goals, applications, certifications and wins in one quiet timeline.',
+    },
+    {
+        icon: FileCode,
+        title: 'READMEs that ship',
+        description:
+            'Generate a polished README from any project, preview it live and copy the markdown.',
     },
     {
         icon: WifiOff,

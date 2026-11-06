@@ -50,6 +50,7 @@ class FortifyServiceProvider extends ServiceProvider
     {
         Fortify::loginView(fn (Request $request) => Inertia::render('auth/Login', [
             'canResetPassword' => Features::enabled(Features::resetPasswords()),
+            'githubAuthEnabled' => $this->githubAuthEnabled(),
             'status' => $request->session()->get('status'),
         ]));
 
@@ -68,12 +69,22 @@ class FortifyServiceProvider extends ServiceProvider
         ]));
 
         Fortify::registerView(fn () => Inertia::render('auth/Register', [
+            'githubAuthEnabled' => $this->githubAuthEnabled(),
             'passwordRules' => Password::defaults()->toPasswordRulesString(),
         ]));
 
         Fortify::twoFactorChallengeView(fn () => Inertia::render('auth/TwoFactorChallenge'));
 
         Fortify::confirmPasswordView(fn () => Inertia::render('auth/ConfirmPassword'));
+    }
+
+    /**
+     * Determine whether GitHub OAuth has been configured.
+     */
+    private function githubAuthEnabled(): bool
+    {
+        return filled(config('services.github.client_id'))
+            && filled(config('services.github.client_secret'));
     }
 
     /**

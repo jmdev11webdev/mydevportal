@@ -4,6 +4,7 @@ import { Head, router } from '@inertiajs/vue3';
 import {
     ArrowUpRight,
     ExternalLink,
+    FileCode,
     FolderKanban,
     GitBranch,
     MoreHorizontal,
@@ -76,6 +77,10 @@ function createProject(): void {
 function editProject(project: Project): void {
     editing.value = project;
     dialogOpen.value = true;
+}
+
+function generateReadme(project: Project): void {
+    router.visit(`/readme?project=${project.id}`);
 }
 
 function removeProject(project: Project): void {
@@ -199,6 +204,10 @@ function progressFor(project: Project): number {
                             <DropdownMenuItem @click="editProject(project)">
                                 <Pencil class="size-4" />
                                 Edit project
+                            </DropdownMenuItem>
+                            <DropdownMenuItem @click="generateReadme(project)">
+                                <FileCode class="size-4" />
+                                Generate README
                             </DropdownMenuItem>
                             <DropdownMenuItem
                                 v-if="project.repository_url"
