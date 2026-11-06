@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
+import GitHubAuthButton from '@/components/GitHubAuthButton.vue';
 import InputError from '@/components/InputError.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
 import TextLink from '@/components/TextLink.vue';
@@ -12,6 +13,7 @@ import { store } from '@/routes/register';
 
 defineProps<{
     passwordRules: string;
+    githubAuthEnabled: boolean;
 }>();
 
 defineOptions({
@@ -24,6 +26,16 @@ defineOptions({
 
 <template>
     <Head title="Register" />
+
+    <div v-if="githubAuthEnabled" class="flex flex-col gap-4">
+        <GitHubAuthButton />
+
+        <div class="flex items-center gap-3 text-xs text-muted-foreground">
+            <div class="h-px flex-1 bg-border" />
+            <span>or continue with email</span>
+            <div class="h-px flex-1 bg-border" />
+        </div>
+    </div>
 
     <Form
         v-bind="store.form()"

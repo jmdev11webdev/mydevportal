@@ -2,6 +2,7 @@
 import { Link } from '@inertiajs/vue3';
 import {
     BookOpen,
+    FileCode,
     FolderGit2,
     GraduationCap,
     LayoutDashboard,
@@ -56,6 +57,11 @@ const mainNavItems: NavItem[] = [
         title: 'Career',
         href: '/career',
         icon: Target,
+    },
+    {
+        title: 'README',
+        href: '/readme',
+        icon: FileCode,
     },
 ];
 
