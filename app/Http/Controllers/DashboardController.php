@@ -113,7 +113,7 @@ class DashboardController extends Controller
                 'label' => $date->format('D'),
                 'date' => $date->toDateString(),
                 'count' => $weekActivity->filter(
-                    fn (Task $task) => $task->completed_at?->isSameDay($date)
+                    fn (Task $task, int $key): bool => $task->completed_at?->isSameDay($date) ?? false
                 )->count(),
             ];
         })->values();

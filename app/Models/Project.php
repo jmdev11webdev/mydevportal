@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -18,8 +20,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property array<int, string>|null $tech_stack
  * @property string|null $repository_url
  * @property string|null $live_url
- * @property \Illuminate\Support\Carbon|null $started_at
- * @property \Illuminate\Support\Carbon|null $due_at
+ * @property Carbon|null $started_at
+ * @property Carbon|null $due_at
  * @property int|null $tasks_count
  * @property int|null $completed_tasks_count
  */
@@ -36,6 +38,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 ])]
 class Project extends Model
 {
+    /** @use HasFactory<Factory<static>> */
     use HasFactory;
 
     /**
