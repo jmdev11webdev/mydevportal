@@ -1,6 +1,16 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, FolderGit2, LayoutGrid } from '@lucide/vue';
+import {
+    BookOpen,
+    FolderGit2,
+    GraduationCap,
+    LayoutDashboard,
+    ListChecks,
+    Lock,
+    NotebookPen,
+    ShieldCheck,
+    Target,
+} from '@lucide/vue';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -14,26 +24,50 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
+        href: '/dashboard',
+        icon: LayoutDashboard,
+    },
+    {
+        title: 'Projects',
+        href: '/projects',
+        icon: FolderGit2,
+    },
+    {
+        title: 'Tasks',
+        href: '/tasks',
+        icon: ListChecks,
+    },
+    {
+        title: 'Learning',
+        href: '/learning',
+        icon: GraduationCap,
+    },
+    {
+        title: 'Notes',
+        href: '/notes',
+        icon: NotebookPen,
+    },
+    {
+        title: 'Career',
+        href: '/career',
+        icon: Target,
     },
 ];
 
 const footerNavItems: NavItem[] = [
     {
-        title: 'Repository',
-        href: 'https://github.com/laravel/vue-starter-kit',
-        icon: FolderGit2,
+        title: 'Privacy & security',
+        href: '/settings/security',
+        icon: ShieldCheck,
     },
     {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue',
+        title: 'Source code',
+        href: 'https://github.com/laravel/vue-starter-kit',
         icon: BookOpen,
     },
 ];
@@ -45,7 +79,7 @@ const footerNavItems: NavItem[] = [
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
-                        <Link :href="dashboard()">
+                        <Link href="/dashboard">
                             <AppLogo />
                         </Link>
                     </SidebarMenuButton>
@@ -54,10 +88,25 @@ const footerNavItems: NavItem[] = [
         </SidebarHeader>
 
         <SidebarContent>
-            <NavMain :items="mainNavItems" />
+            <NavMain :items="mainNavItems" label="Workspace" />
         </SidebarContent>
 
         <SidebarFooter>
+            <div
+                class="mx-2 mb-1 hidden rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3 group-data-[collapsible=icon]:hidden"
+            >
+                <div class="flex items-center gap-2">
+                    <Lock
+                        class="size-3.5 text-emerald-600 dark:text-emerald-400"
+                    />
+                    <p class="text-[11px] font-semibold">Private by default</p>
+                </div>
+                <p
+                    class="mt-1 text-[10px] leading-relaxed text-muted-foreground"
+                >
+                    Your notes, goals and career data stay in your workspace.
+                </p>
+            </div>
             <NavFooter :items="footerNavItems" />
             <NavUser />
         </SidebarFooter>

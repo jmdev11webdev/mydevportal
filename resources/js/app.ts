@@ -40,3 +40,13 @@ initializeTheme();
 
 // This will listen for flash toast data from the server...
 initializeFlashToast();
+
+// Register the PWA service worker in production builds only. The dev server
+// serves modules over a different origin path and caching would break HMR.
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {
+            // Registration is best-effort; the app works without offline support.
+        });
+    });
+}
