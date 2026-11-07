@@ -41,6 +41,11 @@ const form = useForm({
 });
 
 const isEditing = computed(() => Boolean(props.resource));
+const progressError = computed(
+    () =>
+        form.errors.progressPercent ??
+        (form.errors as Record<string, string | undefined>).progress,
+);
 
 function fillForm(): void {
     form.clearErrors();
@@ -214,7 +219,7 @@ function submit(): void {
                         step="5"
                         class="h-2 w-full cursor-pointer appearance-none rounded-full bg-muted accent-indigo-500"
                     />
-                    <InputError :message="form.errors.progressPercent" />
+                    <InputError :message="progressError" />
                 </div>
 
                 <div class="grid gap-2">

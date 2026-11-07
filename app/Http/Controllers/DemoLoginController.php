@@ -15,7 +15,7 @@ class DemoLoginController extends Controller
     {
         $user = User::where('email', DemoSeeder::EMAIL)->first();
 
-        if ($user === null) {
+        if ($user === null || ! $user->projects()->exists()) {
             Artisan::call('db:seed', [
                 '--class' => DemoSeeder::class,
                 '--force' => true,

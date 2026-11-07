@@ -25,10 +25,7 @@ class NoteController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $data = $this->validated($request);
-        $data['user_id'] = $request->user()->id;
-
-        Note::create($data);
+        $request->user()->notes()->create($this->validated($request));
 
         return back()->with('toast', [
             'type' => 'success',

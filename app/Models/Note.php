@@ -20,7 +20,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['title', 'body', 'tags', 'color', 'is_pinned'])]
+#[Fillable(['user_id', 'title', 'body', 'tags', 'color', 'is_pinned'])]
 class Note extends Model
 {
     /** @use HasFactory<Factory<static>> */

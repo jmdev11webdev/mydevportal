@@ -25,6 +25,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  */
 #[Fillable([
+    'user_id',
     'title',
     'provider',
     'url',
