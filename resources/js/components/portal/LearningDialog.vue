@@ -122,13 +122,19 @@ function submit(): void {
                 </DialogDescription>
             </DialogHeader>
 
-            <form class="grid gap-5" @submit.prevent="submit">
+            <form
+                class="grid gap-5"
+                @submit.prevent="submit"
+                @keydown.ctrl.enter.prevent="submit"
+                @keydown.meta.enter.prevent="submit"
+            >
                 <div class="grid gap-2">
                     <Label for="learning-title">Title</Label>
                     <Input
                         id="learning-title"
                         v-model="form.title"
                         placeholder="e.g. Designing Data-Intensive Applications"
+                        required
                         autofocus
                     />
                     <InputError :message="form.errors.title" />
@@ -150,6 +156,7 @@ function submit(): void {
                             id="learning-category"
                             v-model="form.category"
                             placeholder="Backend"
+                            required
                         />
                         <InputError :message="form.errors.category" />
                     </div>
@@ -161,15 +168,18 @@ function submit(): void {
                         id="learning-url"
                         v-model="form.url"
                         placeholder="example.com/resource"
+                        autocorrect="off"
+                        autocapitalize="off"
+                        spellcheck="false"
                     />
                     <InputError :message="form.errors.url" />
                 </div>
 
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div class="grid gap-2">
-                        <Label>Format</Label>
+                        <Label for="learning-format">Format</Label>
                         <Select v-model="form.format">
-                            <SelectTrigger class="w-full">
+                            <SelectTrigger id="learning-format" class="w-full">
                                 <SelectValue placeholder="Select format" />
                             </SelectTrigger>
                             <SelectContent>
@@ -184,9 +194,9 @@ function submit(): void {
                     </div>
 
                     <div class="grid gap-2">
-                        <Label>Status</Label>
+                        <Label for="learning-status">Status</Label>
                         <Select v-model="form.status">
-                            <SelectTrigger class="w-full">
+                            <SelectTrigger id="learning-status" class="w-full">
                                 <SelectValue placeholder="Select status" />
                             </SelectTrigger>
                             <SelectContent>

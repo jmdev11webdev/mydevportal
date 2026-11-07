@@ -174,6 +174,7 @@ const summaryCards = computed(() => [
                     v-for="item in filters"
                     :key="item.value"
                     type="button"
+                    :aria-pressed="filter === item.value"
                     :class="[
                         'rounded-full border px-3 py-1.5 text-xs font-medium transition',
                         filter === item.value
@@ -246,6 +247,7 @@ const summaryCards = computed(() => [
                                 variant="ghost"
                                 size="icon-sm"
                                 class="-mr-2 text-muted-foreground"
+                                :aria-label="`Actions for ${resource.title}`"
                             >
                                 <MoreHorizontal class="size-4" />
                             </Button>

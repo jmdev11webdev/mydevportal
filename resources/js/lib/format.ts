@@ -3,6 +3,16 @@ export function parseDate(value: string | null | undefined): Date | null {
         return null;
     }
 
+    const dateOnlyMatch = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+
+    if (dateOnlyMatch) {
+        return new Date(
+            Number(dateOnlyMatch[1]),
+            Number(dateOnlyMatch[2]) - 1,
+            Number(dateOnlyMatch[3]),
+        );
+    }
+
     const date = new Date(value);
 
     return Number.isNaN(date.getTime()) ? null : date;
@@ -107,6 +117,16 @@ export function initials(name: string | null | undefined): string {
 }
 
 export function toDateInput(value: string | null | undefined): string {
+    if (!value) {
+        return '';
+    }
+
+    const prefixMatch = value.match(/^(\d{4}-\d{2}-\d{2})/);
+
+    if (prefixMatch) {
+        return prefixMatch[1];
+    }
+
     const date = parseDate(value);
 
     if (!date) {

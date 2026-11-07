@@ -87,13 +87,19 @@ function submit(): void {
                 </DialogDescription>
             </DialogHeader>
 
-            <form class="grid gap-5" @submit.prevent="submit">
+            <form
+                class="grid gap-5"
+                @submit.prevent="submit"
+                @keydown.ctrl.enter.prevent="submit"
+                @keydown.meta.enter.prevent="submit"
+            >
                 <div class="grid gap-2">
                     <Label for="note-title">Title</Label>
                     <Input
                         id="note-title"
                         v-model="form.title"
                         placeholder="Give this note a short name"
+                        required
                         autofocus
                     />
                     <InputError :message="form.errors.title" />
@@ -107,6 +113,7 @@ function submit(): void {
                         class="min-h-48 font-mono text-sm"
                         placeholder="Write it down before it disappears..."
                         rows="10"
+                        required
                     />
                     <InputError :message="form.errors.body" />
                 </div>
@@ -114,14 +121,21 @@ function submit(): void {
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div class="grid gap-2">
                         <Label for="note-tags">Tags</Label>
+                        <p
+                            id="note-tags-hint"
+                            class="text-xs text-muted-foreground"
+                        >
+                            Separate tags with commas.
+                        </p>
                         <Input
                             id="note-tags"
                             v-model="form.tags"
                             placeholder="sqlite, performance"
+                            aria-describedby="note-tags-hint"
+                            autocorrect="off"
+                            autocapitalize="off"
+                            spellcheck="false"
                         />
-                        <p class="text-xs text-muted-foreground">
-                            Separate tags with commas.
-                        </p>
                         <InputError :message="form.errors.tags" />
                     </div>
 
@@ -132,9 +146,10 @@ function submit(): void {
                                 v-for="color in noteColorOptions"
                                 :key="color.value"
                                 type="button"
-                                :aria-label="color.label"
+                                :aria-label="`${color.label} note color`"
+                                :aria-pressed="form.color === color.value"
                                 :class="[
-                                    'size-8 rounded-lg border-2',
+                                    'size-8 rounded-lg border-2 transition',
                                     noteColorClasses[color.value].card,
                                     form.color === color.value
                                         ? 'scale-110 border-foreground'

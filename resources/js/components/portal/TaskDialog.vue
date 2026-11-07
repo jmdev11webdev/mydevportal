@@ -109,13 +109,19 @@ function submit(): void {
                 </DialogDescription>
             </DialogHeader>
 
-            <form class="grid gap-5" @submit.prevent="submit">
+            <form
+                class="grid gap-5"
+                @submit.prevent="submit"
+                @keydown.ctrl.enter.prevent="submit"
+                @keydown.meta.enter.prevent="submit"
+            >
                 <div class="grid gap-2">
                     <Label for="task-title">Task</Label>
                     <Input
                         id="task-title"
                         v-model="form.title"
                         placeholder="e.g. Write the ingestion spec"
+                        required
                         autofocus
                     />
                     <InputError :message="form.errors.title" />
@@ -134,9 +140,9 @@ function submit(): void {
 
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div class="grid gap-2">
-                        <Label>Project</Label>
+                        <Label for="task-project">Project</Label>
                         <Select v-model="form.project_id">
-                            <SelectTrigger class="w-full">
+                            <SelectTrigger id="task-project" class="w-full">
                                 <SelectValue placeholder="No project" />
                             </SelectTrigger>
                             <SelectContent>
@@ -154,9 +160,9 @@ function submit(): void {
                     </div>
 
                     <div class="grid gap-2">
-                        <Label>Status</Label>
+                        <Label for="task-status">Status</Label>
                         <Select v-model="form.status">
-                            <SelectTrigger class="w-full">
+                            <SelectTrigger id="task-status" class="w-full">
                                 <SelectValue placeholder="Select status" />
                             </SelectTrigger>
                             <SelectContent>
@@ -173,9 +179,9 @@ function submit(): void {
 
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div class="grid gap-2">
-                        <Label>Priority</Label>
+                        <Label for="task-priority">Priority</Label>
                         <Select v-model="form.priority">
-                            <SelectTrigger class="w-full">
+                            <SelectTrigger id="task-priority" class="w-full">
                                 <SelectValue placeholder="Select priority" />
                             </SelectTrigger>
                             <SelectContent>

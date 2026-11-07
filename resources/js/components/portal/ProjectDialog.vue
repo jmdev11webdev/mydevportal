@@ -115,13 +115,19 @@ function submit(): void {
                 </DialogDescription>
             </DialogHeader>
 
-            <form class="grid gap-5" @submit.prevent="submit">
+            <form
+                class="grid gap-5"
+                @submit.prevent="submit"
+                @keydown.ctrl.enter.prevent="submit"
+                @keydown.meta.enter.prevent="submit"
+            >
                 <div class="grid gap-2">
                     <Label for="project-name">Project name</Label>
                     <Input
                         id="project-name"
                         v-model="form.name"
                         placeholder="e.g. Orbit"
+                        required
                         autofocus
                     />
                     <InputError :message="form.errors.name" />
@@ -138,11 +144,11 @@ function submit(): void {
                     <InputError :message="form.errors.description" />
                 </div>
 
-                <div class="grid gap-4 sm:grid-cols-2">
+                <div class="grid gap-4 sm:grid-cols-3">
                     <div class="grid gap-2">
-                        <Label>Status</Label>
+                        <Label for="project-status">Status</Label>
                         <Select v-model="form.status">
-                            <SelectTrigger class="w-full">
+                            <SelectTrigger id="project-status" class="w-full">
                                 <SelectValue placeholder="Select status" />
                             </SelectTrigger>
                             <SelectContent>
@@ -157,6 +163,16 @@ function submit(): void {
                             </SelectContent>
                         </Select>
                         <InputError :message="form.errors.status" />
+                    </div>
+
+                    <div class="grid gap-2">
+                        <Label for="project-started">Start date</Label>
+                        <Input
+                            id="project-started"
+                            v-model="form.started_at"
+                            type="date"
+                        />
+                        <InputError :message="form.errors.started_at" />
                     </div>
 
                     <div class="grid gap-2">
@@ -177,7 +193,8 @@ function submit(): void {
                             v-for="color in colors"
                             :key="color"
                             type="button"
-                            :aria-label="color"
+                            :aria-label="`Select ${color} accent`"
+                            :aria-pressed="form.color === color"
                             :class="[
                                 'size-8 rounded-full border-2 transition',
                                 projectColorClasses[color].dot,
@@ -193,14 +210,21 @@ function submit(): void {
 
                 <div class="grid gap-2">
                     <Label for="project-stack">Tech stack</Label>
+                    <p
+                        id="project-stack-hint"
+                        class="text-xs text-muted-foreground"
+                    >
+                        Separate technologies with commas.
+                    </p>
                     <Input
                         id="project-stack"
                         v-model="form.tech_stack"
                         placeholder="Vue, Laravel, SQLite"
+                        aria-describedby="project-stack-hint"
+                        autocorrect="off"
+                        autocapitalize="off"
+                        spellcheck="false"
                     />
-                    <p class="text-xs text-muted-foreground">
-                        Separate technologies with commas.
-                    </p>
                     <InputError :message="form.errors.tech_stack" />
                 </div>
 
@@ -211,6 +235,9 @@ function submit(): void {
                             id="project-repo"
                             v-model="form.repository_url"
                             placeholder="github.com/you/project"
+                            autocorrect="off"
+                            autocapitalize="off"
+                            spellcheck="false"
                         />
                         <InputError :message="form.errors.repository_url" />
                     </div>
@@ -220,6 +247,9 @@ function submit(): void {
                             id="project-live"
                             v-model="form.live_url"
                             placeholder="example.com"
+                            autocorrect="off"
+                            autocapitalize="off"
+                            spellcheck="false"
                         />
                         <InputError :message="form.errors.live_url" />
                     </div>

@@ -176,6 +176,7 @@ function removeNote(note: Note): void {
                                     variant="ghost"
                                     size="icon-sm"
                                     class="text-muted-foreground"
+                                    :aria-label="`Actions for ${note.title}`"
                                 >
                                     <MoreHorizontal class="size-4" />
                                 </Button>

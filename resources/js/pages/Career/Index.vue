@@ -208,6 +208,7 @@ function entryIcon(entry: CareerEntry) {
                         variant="ghost"
                         size="icon-sm"
                         class="text-muted-foreground"
+                        :aria-label="`Add ${column.title}`"
                         @click="createEntry(column.type)"
                     >
                         <Plus class="size-4" />
@@ -255,7 +256,8 @@ function entryIcon(entry: CareerEntry) {
                                     <Button
                                         variant="ghost"
                                         size="icon-sm"
-                                        class="-mt-1 -mr-2 text-muted-foreground opacity-0 transition group-hover:opacity-100"
+                                        class="-mt-1 -mr-2 text-muted-foreground transition focus-visible:opacity-100 data-[state=open]:opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
+                                        :aria-label="`Actions for ${entry.title}`"
                                     >
                                         <MoreHorizontal class="size-4" />
                                     </Button>
