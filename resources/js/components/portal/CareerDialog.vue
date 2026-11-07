@@ -97,13 +97,19 @@ function submit(): void {
                 </DialogDescription>
             </DialogHeader>
 
-            <form class="grid gap-5" @submit.prevent="submit">
+            <form
+                class="grid gap-5"
+                @submit.prevent="submit"
+                @keydown.ctrl.enter.prevent="submit"
+                @keydown.meta.enter.prevent="submit"
+            >
                 <div class="grid gap-2">
                     <Label for="career-title">Title</Label>
                     <Input
                         id="career-title"
                         v-model="form.title"
                         placeholder="e.g. Land a senior product engineer role"
+                        required
                         autofocus
                     />
                     <InputError :message="form.errors.title" />
@@ -111,9 +117,9 @@ function submit(): void {
 
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div class="grid gap-2">
-                        <Label>Type</Label>
+                        <Label for="career-type">Type</Label>
                         <Select v-model="form.type">
-                            <SelectTrigger class="w-full">
+                            <SelectTrigger id="career-type" class="w-full">
                                 <SelectValue placeholder="Select type" />
                             </SelectTrigger>
                             <SelectContent>
@@ -133,9 +139,9 @@ function submit(): void {
                     </div>
 
                     <div class="grid gap-2">
-                        <Label>Status</Label>
+                        <Label for="career-status">Status</Label>
                         <Select v-model="form.status">
-                            <SelectTrigger class="w-full">
+                            <SelectTrigger id="career-status" class="w-full">
                                 <SelectValue placeholder="Select status" />
                             </SelectTrigger>
                             <SelectContent>

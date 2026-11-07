@@ -35,10 +35,9 @@ class CareerEntryController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $this->validated($request);
-        $data['user_id'] = $request->user()->id;
         $data['completed_at'] = $data['status'] === 'achieved' ? now() : null;
 
-        CareerEntry::create($data);
+        $request->user()->careerEntries()->create($data);
 
         return back()->with('toast', [
             'type' => 'success',

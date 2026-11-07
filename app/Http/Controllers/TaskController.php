@@ -6,6 +6,7 @@ use App\Models\Project;
 use App\Models\Task;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -34,10 +35,9 @@ class TaskController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $this->validated($request);
-        $data['user_id'] = $request->user()->id;
         $data['completed_at'] = $data['status'] === 'done' ? now() : null;
 
-        Task::create($data);
+        $request->user()->tasks()->create($data);
 
         return back()->with('toast', [
             'type' => 'success',
@@ -102,7 +102,11 @@ class TaskController extends Controller
         return $request->validate([
             'title' => ['required', 'string', 'max:160'],
             'description' => ['nullable', 'string', 'max:2000'],
-            'project_id' => ['nullable', 'integer', 'exists:projects,id'],
+            'project_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('projects', 'id')->where('user_id', $request->user()->id),
+            ],
             'status' => ['required', 'in:todo,in_progress,done'],
             'priority' => ['required', 'in:low,medium,high'],
             'due_date' => ['nullable', 'date'],

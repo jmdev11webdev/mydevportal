@@ -215,6 +215,7 @@ function removeTask(task: Task): void {
                         variant="ghost"
                         size="icon-sm"
                         class="text-muted-foreground"
+                        :aria-label="`Add task to ${column.title}`"
                         @click="createTask(column.status)"
                     >
                         <Plus class="size-4" />
@@ -307,7 +308,8 @@ function removeTask(task: Task): void {
                                     <Button
                                         variant="ghost"
                                         size="icon-sm"
-                                        class="-mt-1 -mr-1 text-muted-foreground opacity-0 transition group-hover:opacity-100"
+                                        class="-mt-1 -mr-1 text-muted-foreground transition focus-visible:opacity-100 data-[state=open]:opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
+                                        :aria-label="`Actions for ${task.title}`"
                                     >
                                         <MoreHorizontal class="size-4" />
                                     </Button>

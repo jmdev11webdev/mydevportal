@@ -10,6 +10,7 @@ import {
     MoreHorizontal,
     Pencil,
     Plus,
+    Search,
     Trash2,
 } from '@lucide/vue';
 import EmptyState from '@/components/EmptyState.vue';
@@ -25,6 +26,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
 import {
     projectColorClasses,
     projectStatusClasses,
@@ -46,6 +48,7 @@ const props = defineProps<{
 const dialogOpen = ref(false);
 const editing = ref<Project | null>(null);
 const filter = ref<'all' | ProjectStatus>('all');
+const search = ref('');
 
 const filters: { label: string; value: 'all' | ProjectStatus }[] = [
     { label: 'All', value: 'all' },
@@ -55,19 +58,31 @@ const filters: { label: string; value: 'all' | ProjectStatus }[] = [
     { label: 'Completed', value: 'completed' },
 ];
 
-const filtered = computed(() =>
-    filter.value === 'all'
-        ? props.projects
-        : props.projects.filter((project) => project.status === filter.value),
-);
+const filtered = computed(() => {
+    const term = search.value.trim().toLowerCase();
 
-const counts = computed(() => ({
-    all: props.projects.length,
-    active: props.projects.filter((project) => project.status === 'active')
-        .length,
-    planning: props.projects.filter((project) => project.status === 'planning')
-        .length,
-}));
+    return props.projects.filter((project) => {
+        const matchesStatus =
+            filter.value === 'all' || project.status === filter.value;
+        const matchesSearch =
+            !term ||
+            project.name.toLowerCase().includes(term) ||
+            (project.description ?? '').toLowerCase().includes(term) ||
+            (project.tech_stack ?? []).some((tech) =>
+                tech.toLowerCase().includes(term),
+            );
+
+        return matchesStatus && matchesSearch;
+    });
+});
+
+function filterCount(value: 'all' | ProjectStatus): number {
+    if (value === 'all') {
+        return props.projects.length;
+    }
+
+    return props.projects.filter((project) => project.status === value).length;
+}
 
 function createProject(): void {
     editing.value = null;
@@ -124,32 +139,37 @@ function progressFor(project: Project): number {
             </template>
         </PageHeader>
 
-        <div class="flex flex-wrap items-center gap-2">
-            <button
-                v-for="item in filters"
-                :key="item.value"
-                type="button"
-                :class="[
-                    'rounded-full border px-3 py-1.5 text-xs font-medium transition',
-                    filter === item.value
-                        ? 'border-foreground bg-foreground text-background'
-                        : 'bg-background text-muted-foreground hover:border-foreground/40 hover:text-foreground',
-                ]"
-                @click="filter = item.value"
-            >
-                {{ item.label }}
-                <span class="ml-1 opacity-60">
-                    {{
-                        item.value === 'all'
-                            ? counts.all
-                            : item.value === 'active'
-                              ? counts.active
-                              : item.value === 'planning'
-                                ? counts.planning
-                                : ''
-                    }}
-                </span>
-            </button>
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div class="flex flex-wrap items-center gap-2">
+                <button
+                    v-for="item in filters"
+                    :key="item.value"
+                    type="button"
+                    :aria-pressed="filter === item.value"
+                    :class="[
+                        'rounded-full border px-3 py-1.5 text-xs font-medium transition',
+                        filter === item.value
+                            ? 'border-foreground bg-foreground text-background'
+                            : 'bg-background text-muted-foreground hover:border-foreground/40 hover:text-foreground',
+                    ]"
+                    @click="filter = item.value"
+                >
+                    {{ item.label }}
+                    <span class="ml-1 opacity-60">
+                        {{ filterCount(item.value) }}
+                    </span>
+                </button>
+            </div>
+            <div class="relative sm:ml-auto sm:w-64">
+                <Search
+                    class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+                />
+                <Input
+                    v-model="search"
+                    class="pl-9"
+                    placeholder="Search projects or stack..."
+                />
+            </div>
         </div>
 
         <div
@@ -196,6 +216,7 @@ function progressFor(project: Project): number {
                                 variant="ghost"
                                 size="icon-sm"
                                 class="-mr-2 text-muted-foreground"
+                                :aria-label="`Actions for ${project.name}`"
                             >
                                 <MoreHorizontal class="size-4" />
                             </Button>

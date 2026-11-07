@@ -25,6 +25,7 @@ use Illuminate\Support\Carbon;
  * @property-read Project|null $project
  */
 #[Fillable([
+    'user_id',
     'project_id',
     'title',
     'description',

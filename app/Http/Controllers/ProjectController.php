@@ -29,10 +29,7 @@ class ProjectController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $data = $this->validated($request);
-        $data['user_id'] = $request->user()->id;
-
-        Project::create($data);
+        $request->user()->projects()->create($this->validated($request));
 
         return back()->with('toast', [
             'type' => 'success',
@@ -69,6 +66,14 @@ class ProjectController extends Controller
      */
     private function validated(Request $request): array
     {
+        foreach (['repository_url', 'live_url'] as $field) {
+            $url = trim((string) $request->input($field, ''));
+
+            if ($url !== '' && ! preg_match('#^https?://#i', $url)) {
+                $request->merge([$field => 'https://'.$url]);
+            }
+        }
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120'],
             'description' => ['nullable', 'string', 'max:2000'],

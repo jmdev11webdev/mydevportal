@@ -26,6 +26,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $completed_tasks_count
  */
 #[Fillable([
+    'user_id',
     'name',
     'description',
     'status',

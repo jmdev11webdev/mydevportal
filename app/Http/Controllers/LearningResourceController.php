@@ -33,10 +33,16 @@ class LearningResourceController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $this->validated($request);
-        $data['user_id'] = $request->user()->id;
-        $data['completed_at'] = $data['progress'] >= 100 ? now() : null;
 
-        LearningResource::create($data);
+        if ($data['progress'] >= 100) {
+            $data['status'] = 'completed';
+        } elseif ($data['status'] === 'completed') {
+            $data['progress'] = 100;
+        }
+
+        $data['completed_at'] = $data['status'] === 'completed' ? now() : null;
+
+        $request->user()->learningResources()->create($data);
 
         return back()->with('toast', [
             'type' => 'success',
@@ -49,13 +55,16 @@ class LearningResourceController extends Controller
         $this->authorizeOwner($request, $learningResource);
 
         $data = $this->validated($request);
-        $data['completed_at'] = $data['progress'] >= 100
-            ? ($learningResource->completed_at ?? now())
-            : null;
 
         if ($data['progress'] >= 100) {
             $data['status'] = 'completed';
+        } elseif ($data['status'] === 'completed') {
+            $data['progress'] = 100;
         }
+
+        $data['completed_at'] = $data['status'] === 'completed'
+            ? ($learningResource->completed_at ?? now())
+            : null;
 
         $learningResource->update($data);
 
@@ -108,6 +117,12 @@ class LearningResourceController extends Controller
      */
     private function validated(Request $request): array
     {
+        $url = trim((string) $request->input('url', ''));
+
+        if ($url !== '' && ! preg_match('#^https?://#i', $url)) {
+            $request->merge(['url' => 'https://'.$url]);
+        }
+
         return $request->validate([
             'title' => ['required', 'string', 'max:160'],
             'provider' => ['nullable', 'string', 'max:120'],
