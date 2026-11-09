@@ -1,5 +1,8 @@
 # MyDevPortal
 
+<img width="1350" height="767" align="center" alt="image" src="https://github.com/user-attachments/assets/53033636-4638-4f43-b6c2-8d2d128be9cc" />
+
+
 A privacy-first developer productivity PWA for learning, building, focusing, and quietly managing your career — built with **Laravel 13**, **Inertia v3**, **Vue 3**, **TypeScript**, and **Tailwind CSS 4**.
 
 MyDevPortal keeps the whole developer loop in one calm workspace: projects, tasks, learning resources, private notes, a career timeline, and a README generator. No analytics, no ad trackers, no growth dashboards — just your work.
