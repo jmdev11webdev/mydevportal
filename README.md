@@ -1,7 +1,6 @@
 # MyDevPortal
 
-<img width="1350" height="767" align="center" alt="image" src="https://github.com/user-attachments/assets/53033636-4638-4f43-b6c2-8d2d128be9cc" />
-
+<img width="1536" height="1024" align="center" alt="image" src="https://github.com/user-attachments/assets/5ae615d7-4497-4c1f-a630-6adfebac1aec" /><br>
 
 A privacy-first developer productivity PWA for learning, building, focusing, and quietly managing your career — built with **Laravel 13**, **Inertia v3**, **Vue 3**, **TypeScript**, and **Tailwind CSS 4**.
 
