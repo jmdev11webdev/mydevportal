@@ -9,6 +9,7 @@ import {
     SkipForward,
     Sparkles,
     Square,
+    Timer,
     Volume2,
     VolumeX,
 } from '@lucide/vue';
@@ -43,11 +44,108 @@ const {
     stopTimer,
     skipRest,
     dismissRestOverlay,
+    // Reciprocal Duration Timer
+    durationRunning,
+    durationLabel,
+    isDurationPausedByEyeBreak,
+    formattedDurationRemaining,
+    formattedDurationElapsed,
+    isDurationDefaultState,
+    toggleDurationTimer,
+    stopDurationTimer,
 } = useEyeCareTimer();
 </script>
 
 <template>
-    <div class="flex items-center gap-1.5">
+    <div class="flex items-center gap-2">
+        <!-- Custom Duration Timer Pill (shown when active or mid-session) -->
+        <div
+            v-if="!isDurationDefaultState"
+            :class="[
+                'flex items-center gap-1.5 rounded-xl border px-2.5 py-1 text-xs transition-colors',
+                isDurationPausedByEyeBreak
+                    ? 'border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300'
+                    : durationRunning
+                      ? 'border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-300'
+                      : 'border-border bg-muted/40 text-muted-foreground',
+            ]"
+        >
+            <TooltipProvider :delay-duration="0">
+                <Tooltip>
+                    <TooltipTrigger as-child>
+                        <Link
+                            href="/eye-care"
+                            class="flex items-center gap-1.5 font-medium transition hover:opacity-80"
+                        >
+                            <Timer class="size-3.5 shrink-0" />
+                            <span
+                                v-if="isDurationPausedByEyeBreak"
+                                class="hidden text-[11px] font-semibold md:inline"
+                            >
+                                Paused (20-20-20)
+                            </span>
+                            <span
+                                v-else-if="durationLabel"
+                                class="hidden max-w-28 truncate text-[11px] lg:inline"
+                            >
+                                {{ durationLabel }}
+                            </span>
+                            <span v-else class="hidden text-[11px] sm:inline">
+                                Duration
+                            </span>
+                            <span
+                                class="font-mono text-xs font-semibold tabular-nums"
+                            >
+                                {{ formattedDurationRemaining }}
+                            </span>
+                        </Link>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" class="max-w-xs">
+                        <p class="font-semibold">
+                            {{ durationLabel || 'Custom Duration Timer' }}
+                        </p>
+                        <p class="mt-0.5 text-[11px] text-muted-foreground">
+                            Elapsed: {{ formattedDurationElapsed }} ·
+                            {{
+                                isDurationPausedByEyeBreak
+                                    ? 'Automatically paused while 20-20-20 eye break is active.'
+                                    : 'Automatically pauses whenever a 20-20-20 eye break starts.'
+                            }}
+                        </p>
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
+
+            <div class="mx-0.5 h-3.5 w-px bg-border" />
+
+            <button
+                type="button"
+                class="inline-flex size-5 items-center justify-center rounded-md transition hover:bg-background/80 hover:text-foreground"
+                :aria-label="
+                    durationRunning
+                        ? 'Pause duration timer'
+                        : 'Resume duration timer'
+                "
+                @click="toggleDurationTimer"
+            >
+                <Pause
+                    v-if="durationRunning && !isDurationPausedByEyeBreak"
+                    class="size-3"
+                />
+                <Play v-else class="size-3" />
+            </button>
+
+            <button
+                type="button"
+                class="inline-flex size-5 items-center justify-center rounded-md text-rose-500 transition hover:bg-rose-500/10"
+                aria-label="Stop duration timer"
+                @click="stopDurationTimer"
+            >
+                <Square class="size-2.5 fill-current" />
+            </button>
+        </div>
+
+        <!-- 20-20-20 Eye Care Timer Pill -->
         <div
             :class="[
                 'flex items-center gap-1.5 rounded-xl border px-2.5 py-1 text-xs transition-colors',
@@ -76,7 +174,9 @@ const {
                                 ]"
                             />
                             <span class="hidden sm:inline">
-                                {{ phase === 'rest' ? 'Look 20ft' : '20-20-20' }}
+                                {{
+                                    phase === 'rest' ? 'Look 20ft' : '20-20-20'
+                                }}
                             </span>
                             <span
                                 class="font-mono text-xs font-semibold tabular-nums"
@@ -95,7 +195,7 @@ const {
                         </p>
                         <p class="mt-0.5 text-[11px] text-muted-foreground">
                             Every 20 minutes, look 20 feet (6m) away for 20
-                            seconds. Click to open full timer & clinical
+                            seconds. Click to open full timer &amp; clinical
                             studies.
                         </p>
                     </TooltipContent>
@@ -140,7 +240,7 @@ const {
                         </button>
                     </TooltipTrigger>
                     <TooltipContent side="bottom">
-                        <p>Stop & reset timer</p>
+                        <p>Stop &amp; reset timer</p>
                     </TooltipContent>
                 </Tooltip>
             </TooltipProvider>
@@ -211,6 +311,15 @@ const {
                     Blink slowly 3–5 times to recoat your cornea’s tear film
                     (Talens-Estarelles et al., 2023).
                 </p>
+
+                <div
+                    v-if="isDurationPausedByEyeBreak"
+                    class="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-[11px] font-medium text-amber-700 dark:text-amber-300"
+                >
+                    <Timer class="size-3.5" />
+                    Duration timer ({{ formattedDurationRemaining }}) is
+                    auto-paused during this 20s break
+                </div>
             </div>
 
             <DialogFooter

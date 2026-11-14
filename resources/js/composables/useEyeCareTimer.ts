@@ -89,6 +89,8 @@ type PersistedEyeCareState = {
     soundEnabled: boolean;
     autoCycle: boolean;
     restOverlayEnabled: boolean;
+    durationTargetMinutes: number;
+    syncDurationWithEyeCare: boolean;
 };
 
 const STORAGE_KEY = 'mydevportal.eye-care-20-20-20';
@@ -111,6 +113,14 @@ const soundEnabled = ref(true);
 const autoCycle = ref(true);
 const restOverlayEnabled = ref(true);
 const restModalDismissed = ref(false);
+
+// Custom Duration Timer state (reciprocates with the 20-20-20 rule)
+const durationTargetMinutes = ref(45);
+const durationRemainingSeconds = ref(45 * 60);
+const durationElapsedSeconds = ref(0);
+const durationRunning = ref(false);
+const syncDurationWithEyeCare = ref(true);
+const durationLabel = ref<string | null>(null);
 
 let initialized = false;
 let intervalId: number | null = null;
@@ -143,6 +153,19 @@ function loadState(): void {
             typeof parsed.restOverlayEnabled === 'boolean'
                 ? parsed.restOverlayEnabled
                 : true;
+        syncDurationWithEyeCare.value =
+            typeof parsed.syncDurationWithEyeCare === 'boolean'
+                ? parsed.syncDurationWithEyeCare
+                : true;
+
+        if (
+            typeof parsed.durationTargetMinutes === 'number' &&
+            parsed.durationTargetMinutes >= 1 &&
+            parsed.durationTargetMinutes <= 480
+        ) {
+            durationTargetMinutes.value = parsed.durationTargetMinutes;
+            durationRemainingSeconds.value = parsed.durationTargetMinutes * 60;
+        }
 
         if (parsed.date === currentDay) {
             cyclesToday.value =
@@ -174,6 +197,8 @@ function saveState(): void {
             soundEnabled: soundEnabled.value,
             autoCycle: autoCycle.value,
             restOverlayEnabled: restOverlayEnabled.value,
+            durationTargetMinutes: durationTargetMinutes.value,
+            syncDurationWithEyeCare: syncDurationWithEyeCare.value,
         };
         window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
     } catch {
@@ -199,7 +224,9 @@ function playChime(type: 'break-start' | 'break-end'): void {
         const ctx = new AudioCtx();
         const now = ctx.currentTime;
         const notes =
-            type === 'break-start' ? [523.25, 659.25, 783.99] : [783.99, 1046.5];
+            type === 'break-start'
+                ? [523.25, 659.25, 783.99]
+                : [783.99, 1046.5];
 
         notes.forEach((freq, index) => {
             const osc = ctx.createOscillator();
@@ -229,8 +256,16 @@ function playChime(type: 'break-start' | 'break-end'): void {
     }
 }
 
-function clearTicker(): void {
-    if (intervalId !== null && typeof window !== 'undefined') {
+function ensureTickerState(): void {
+    if (typeof window === 'undefined') {
+        return;
+    }
+
+    if (isRunning.value || durationRunning.value) {
+        if (intervalId === null) {
+            intervalId = window.setInterval(tick, 1000);
+        }
+    } else if (intervalId !== null) {
         window.clearInterval(intervalId);
         intervalId = null;
     }
@@ -242,9 +277,12 @@ function transitionToRest(): void {
     restModalDismissed.value = false;
     playChime('break-start');
 
+    const pauseNote = durationRunning.value
+        ? ' Your active Duration Timer has been automatically paused for 20s.'
+        : '';
+
     toast.info('20-20-20 Eye Break: Look 20 feet away for 20 seconds', {
-        description:
-            'Relax your ciliary muscles and blink slowly to refresh your tear film.',
+        description: `Relax your ciliary muscles and blink slowly.${pauseNote}`,
         duration: 8000,
     });
 }
@@ -258,18 +296,49 @@ function completeRestCycle(): void {
     saveState();
     playChime('break-end');
 
+    const resumeNote = durationRunning.value
+        ? ' Your Duration Timer has automatically resumed.'
+        : '';
+
     toast.success('20-20-20 cycle complete! Eyes refreshed.', {
-        description: autoCycle.value
-            ? 'Starting your next 20-minute focus session.'
-            : 'Timer is ready whenever you want to start your next 20-minute block.',
+        description:
+            (autoCycle.value
+                ? 'Starting your next 20-minute focus session.'
+                : 'Timer is ready for your next 20-minute block.') + resumeNote,
     });
 
     if (!autoCycle.value) {
-        pauseTimer();
+        isRunning.value = false;
+        ensureTickerState();
     }
 }
 
 function tick(): void {
+    const isEyeRestActive = phase.value === 'rest' && isRunning.value;
+
+    // 1. Update Custom Duration Timer ONLY when 20-20-20 eye break is NOT active
+    if (durationRunning.value && !isEyeRestActive) {
+        durationElapsedSeconds.value += 1;
+
+        if (durationRemainingSeconds.value > 1) {
+            durationRemainingSeconds.value -= 1;
+        } else {
+            durationRemainingSeconds.value = 0;
+            durationRunning.value = false;
+            playChime('break-end');
+            toast.success(
+                durationLabel.value
+                    ? `Duration complete: ${durationLabel.value}`
+                    : `${durationTargetMinutes.value}-minute focus duration completed!`,
+                {
+                    description: `Total active focus time: ${formatHms(durationElapsedSeconds.value)}.`,
+                },
+            );
+            ensureTickerState();
+        }
+    }
+
+    // 2. Update 20-20-20 Eye Care Timer
     if (!isRunning.value) {
         return;
     }
@@ -301,16 +370,12 @@ function startTimer(): void {
     }
 
     isRunning.value = true;
-    clearTicker();
-
-    if (typeof window !== 'undefined') {
-        intervalId = window.setInterval(tick, 1000);
-    }
+    ensureTickerState();
 }
 
 function pauseTimer(): void {
     isRunning.value = false;
-    clearTicker();
+    ensureTickerState();
     saveState();
 }
 
@@ -323,14 +388,14 @@ function toggleTimer(): void {
 }
 
 /**
- * Stop-timer: halts any active countdown and resets back to the start of a 20-minute focus block.
+ * Stop-timer: halts the 20-20-20 countdown and resets back to 20:00 focus.
  */
 function stopTimer(): void {
     isRunning.value = false;
-    clearTicker();
     phase.value = 'focus';
     remainingSeconds.value = FOCUS_DURATION_SECONDS;
     restModalDismissed.value = false;
+    ensureTickerState();
     saveState();
 }
 
@@ -364,11 +429,97 @@ function resetDailyStats(): void {
     toast.success('Today’s 20-20-20 session stats have been reset.');
 }
 
-watch([soundEnabled, autoCycle, restOverlayEnabled], () => {
-    if (initialized) {
-        saveState();
+// --- Custom Duration Timer Controls (Reciprocal with 20-20-20 Rule) ---
+
+function setDurationMinutes(
+    minutes: number,
+    label: string | null = null,
+): void {
+    loadState();
+    const clamped = Math.max(1, Math.min(480, Math.round(minutes)));
+    durationTargetMinutes.value = clamped;
+    durationRemainingSeconds.value = clamped * 60;
+    durationElapsedSeconds.value = 0;
+    if (label !== null) {
+        durationLabel.value = label;
     }
-});
+    saveState();
+}
+
+function startDurationTimer(options?: {
+    minutes?: number;
+    label?: string | null;
+}): void {
+    loadState();
+
+    if (options?.minutes) {
+        setDurationMinutes(options.minutes, options.label ?? null);
+    } else if (options?.label !== undefined) {
+        durationLabel.value = options.label;
+    }
+
+    if (durationRemainingSeconds.value <= 0) {
+        durationRemainingSeconds.value = durationTargetMinutes.value * 60;
+        durationElapsedSeconds.value = 0;
+    }
+
+    durationRunning.value = true;
+
+    // Reciprocate: when synced, also start the 20-20-20 rule timer so 20m breaks happen automatically
+    if (syncDurationWithEyeCare.value && !isRunning.value) {
+        isRunning.value = true;
+    }
+
+    ensureTickerState();
+}
+
+function pauseDurationTimer(): void {
+    durationRunning.value = false;
+    ensureTickerState();
+}
+
+function toggleDurationTimer(): void {
+    if (durationRunning.value) {
+        pauseDurationTimer();
+    } else {
+        startDurationTimer();
+    }
+}
+
+function stopDurationTimer(): void {
+    durationRunning.value = false;
+    durationRemainingSeconds.value = durationTargetMinutes.value * 60;
+    durationElapsedSeconds.value = 0;
+    durationLabel.value = null;
+    ensureTickerState();
+}
+
+function formatHms(totalSeconds: number): string {
+    const hrs = Math.floor(totalSeconds / 3600);
+    const mins = Math.floor((totalSeconds % 3600) / 60);
+    const secs = totalSeconds % 60;
+
+    if (hrs > 0) {
+        return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+}
+
+watch(
+    [
+        soundEnabled,
+        autoCycle,
+        restOverlayEnabled,
+        durationTargetMinutes,
+        syncDurationWithEyeCare,
+    ],
+    () => {
+        if (initialized) {
+            saveState();
+        }
+    },
+);
 
 export function useEyeCareTimer() {
     loadState();
@@ -385,11 +536,7 @@ export function useEyeCareTimer() {
         return Math.min(100, Math.max(0, Math.round((elapsed / total) * 100)));
     });
 
-    const formattedTime = computed(() => {
-        const mins = Math.floor(remainingSeconds.value / 60);
-        const secs = remainingSeconds.value % 60;
-        return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-    });
+    const formattedTime = computed(() => formatHms(remainingSeconds.value));
 
     const focusMinutesToday = computed(() =>
         Math.floor(focusSecondsToday.value / 60),
@@ -408,6 +555,40 @@ export function useEyeCareTimer() {
             isRunning.value &&
             restOverlayEnabled.value &&
             !restModalDismissed.value,
+    );
+
+    // Reciprocal Duration Timer computed properties
+    const isDurationPausedByEyeBreak = computed(
+        () =>
+            durationRunning.value && phase.value === 'rest' && isRunning.value,
+    );
+
+    const durationTotalSeconds = computed(
+        () => durationTargetMinutes.value * 60,
+    );
+
+    const durationProgressPercent = computed(() => {
+        const total = durationTotalSeconds.value;
+        if (total <= 0) {
+            return 0;
+        }
+        const elapsed = total - durationRemainingSeconds.value;
+        return Math.min(100, Math.max(0, Math.round((elapsed / total) * 100)));
+    });
+
+    const formattedDurationRemaining = computed(() =>
+        formatHms(durationRemainingSeconds.value),
+    );
+
+    const formattedDurationElapsed = computed(() =>
+        formatHms(durationElapsedSeconds.value),
+    );
+
+    const isDurationDefaultState = computed(
+        () =>
+            !durationRunning.value &&
+            durationElapsedSeconds.value === 0 &&
+            durationRemainingSeconds.value === durationTotalSeconds.value,
     );
 
     return {
@@ -435,5 +616,23 @@ export function useEyeCareTimer() {
         skipRest,
         dismissRestOverlay,
         resetDailyStats,
+        // Reciprocal Custom Duration Timer
+        durationTargetMinutes,
+        durationRemainingSeconds,
+        durationElapsedSeconds,
+        durationRunning,
+        syncDurationWithEyeCare,
+        durationLabel,
+        isDurationPausedByEyeBreak,
+        durationTotalSeconds,
+        durationProgressPercent,
+        formattedDurationRemaining,
+        formattedDurationElapsed,
+        isDurationDefaultState,
+        setDurationMinutes,
+        startDurationTimer,
+        pauseDurationTimer,
+        toggleDurationTimer,
+        stopDurationTimer,
     };
 }

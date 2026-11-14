@@ -1,20 +1,27 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import { Head, router } from '@inertiajs/vue3';
+import { computed, reactive, ref } from 'vue';
+import { Head, Link, router } from '@inertiajs/vue3';
 import {
+    CalendarDays,
     CheckCircle2,
+    ChevronDown,
+    ChevronRight,
     Circle,
     CircleDashed,
     ListChecks,
+    ListTodo,
     LoaderCircle,
     MoreHorizontal,
     Pencil,
     Plus,
     Search,
+    Timer,
     Trash2,
+    X,
 } from '@lucide/vue';
 import EmptyState from '@/components/EmptyState.vue';
 import PageHeader from '@/components/PageHeader.vue';
+import ProgressBar from '@/components/ProgressBar.vue';
 import TaskDialog from '@/components/portal/TaskDialog.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -34,13 +41,20 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useEyeCareTimer } from '@/composables/useEyeCareTimer';
 import {
     projectColorClasses,
     taskPriorityClasses,
     taskStatusLabel,
 } from '@/lib/colors';
 import { isOverdue, relativeDate, toDateInput } from '@/lib/format';
-import type { Project, Task, TaskStatus } from '@/types/portal';
+import type {
+    CalendarEvent,
+    Project,
+    Subtask,
+    Task,
+    TaskStatus,
+} from '@/types/portal';
 
 defineOptions({
     layout: {
@@ -51,7 +65,10 @@ defineOptions({
 const props = defineProps<{
     tasks: Task[];
     projects: Pick<Project, 'id' | 'name' | 'color'>[];
+    events?: Pick<CalendarEvent, 'id' | 'title' | 'color' | 'starts_at'>[];
 }>();
+
+const { startDurationTimer } = useEyeCareTimer();
 
 const dialogOpen = ref(false);
 const editing = ref<Task | null>(null);
@@ -59,6 +76,9 @@ const defaultStatus = ref<TaskStatus>('todo');
 const defaultProjectId = ref<number | null>(null);
 const search = ref('');
 const projectFilter = ref('all');
+
+const expandedSubtasks = reactive<Record<number, boolean>>({});
+const inlineSubtaskInputs = reactive<Record<number, string>>({});
 
 const columns: { status: TaskStatus; title: string; tone: string }[] = [
     {
@@ -85,7 +105,11 @@ const filtered = computed(() => {
         const matchesSearch =
             !term ||
             task.title.toLowerCase().includes(term) ||
-            (task.project?.name ?? '').toLowerCase().includes(term);
+            (task.project?.name ?? '').toLowerCase().includes(term) ||
+            (task.event?.title ?? '').toLowerCase().includes(term) ||
+            (task.subtasks ?? []).some((s) =>
+                s.title.toLowerCase().includes(term),
+            );
         const matchesProject =
             projectFilter.value === 'all' ||
             String(task.project_id) === projectFilter.value;
@@ -129,9 +153,11 @@ function moveTask(task: Task, status: TaskStatus): void {
             title: task.title,
             description: task.description,
             project_id: task.project_id,
+            calendar_event_id: task.calendar_event_id ?? null,
             status,
             priority: task.priority,
             due_date: toDateInput(task.due_date) || null,
+            subtasks: task.subtasks ?? [],
         },
         { preserveScroll: true },
     );
@@ -144,6 +170,62 @@ function removeTask(task: Task): void {
 
     router.delete(`/tasks/${task.id}`, { preserveScroll: true });
 }
+
+function toggleSubtasksDrawer(taskId: number): void {
+    expandedSubtasks[taskId] = !expandedSubtasks[taskId];
+}
+
+function completedSubtasksCount(subtasks?: Subtask[] | null): number {
+    return (subtasks ?? []).filter((s) => s.completed).length;
+}
+
+function subtaskProgress(subtasks?: Subtask[] | null): number {
+    const list = subtasks ?? [];
+    if (!list.length) {
+        return 0;
+    }
+    return Math.round((completedSubtasksCount(list) / list.length) * 100);
+}
+
+function toggleSubtask(task: Task, subtaskId: string): void {
+    router.patch(
+        `/tasks/${task.id}/subtasks/${subtaskId}/toggle`,
+        {},
+        { preserveScroll: true },
+    );
+}
+
+function addInlineSubtask(task: Task): void {
+    const title = (inlineSubtaskInputs[task.id] ?? '').trim();
+    if (!title) {
+        return;
+    }
+
+    router.post(
+        `/tasks/${task.id}/subtasks`,
+        { title },
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                inlineSubtaskInputs[task.id] = '';
+                expandedSubtasks[task.id] = true;
+            },
+        },
+    );
+}
+
+function removeSubtask(task: Task, subtaskId: string): void {
+    router.delete(`/tasks/${task.id}/subtasks/${subtaskId}`, {
+        preserveScroll: true,
+    });
+}
+
+function startTaskFocusTimer(task: Task, minutes = 45): void {
+    startDurationTimer({
+        minutes,
+        label: `Task: ${task.title}`,
+    });
+}
 </script>
 
 <template>
@@ -153,10 +235,16 @@ function removeTask(task: Task): void {
         <PageHeader
             eyebrow="Focus"
             title="Tasks"
-            description="A clear view of what's next. Move work across the board without losing momentum."
+            description="A clear view of what's next. Break work into subtasks, connect to calendar events, and move across the board."
             :icon="ListChecks"
         >
             <template #actions>
+                <Button variant="outline" as-child>
+                    <Link href="/calendar">
+                        <CalendarDays class="size-4" />
+                        Open Calendar
+                    </Link>
+                </Button>
                 <Button @click="createTask()">
                     <Plus class="size-4" />
                     New task
@@ -172,7 +260,7 @@ function removeTask(task: Task): void {
                 <Input
                     v-model="search"
                     class="pl-9"
-                    placeholder="Search tasks..."
+                    placeholder="Search tasks, subtasks, events..."
                 />
             </div>
             <Select v-model="projectFilter">
@@ -258,6 +346,13 @@ function removeTask(task: Task): void {
                                     {{ task.title }}
                                 </p>
 
+                                <p
+                                    v-if="task.description"
+                                    class="mt-1 line-clamp-2 text-xs text-muted-foreground"
+                                >
+                                    {{ task.description }}
+                                </p>
+
                                 <div
                                     class="mt-2 flex flex-wrap items-center gap-2"
                                 >
@@ -275,6 +370,16 @@ function removeTask(task: Task): void {
                                         />
                                         {{ task.project.name }}
                                     </span>
+
+                                    <Link
+                                        v-if="task.event"
+                                        href="/calendar"
+                                        class="flex items-center gap-1 rounded-md border border-indigo-500/30 bg-indigo-500/10 px-1.5 py-0.5 text-[11px] text-indigo-700 transition hover:bg-indigo-500/20 dark:text-indigo-300"
+                                    >
+                                        <CalendarDays class="size-3" />
+                                        {{ task.event.title }}
+                                    </Link>
+
                                     <span
                                         class="flex items-center gap-1.5 text-[11px] text-muted-foreground"
                                     >
@@ -288,6 +393,7 @@ function removeTask(task: Task): void {
                                         />
                                         {{ task.priority }}
                                     </span>
+
                                     <span
                                         v-if="task.due_date"
                                         :class="[
@@ -300,6 +406,110 @@ function removeTask(task: Task): void {
                                     >
                                         {{ relativeDate(task.due_date) }}
                                     </span>
+
+                                    <button
+                                        type="button"
+                                        class="inline-flex items-center gap-1 rounded-md border bg-muted/30 px-1.5 py-0.5 text-[11px] text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                                        @click="toggleSubtasksDrawer(task.id)"
+                                    >
+                                        <ListTodo class="size-3" />
+                                        <span v-if="task.subtasks?.length">
+                                            {{
+                                                completedSubtasksCount(
+                                                    task.subtasks,
+                                                )
+                                            }}/{{ task.subtasks.length }}
+                                        </span>
+                                        <span v-else>Subtasks</span>
+                                        <ChevronDown
+                                            v-if="expandedSubtasks[task.id]"
+                                            class="size-3"
+                                        />
+                                        <ChevronRight v-else class="size-3" />
+                                    </button>
+                                </div>
+
+                                <div v-if="task.subtasks?.length" class="mt-2">
+                                    <ProgressBar
+                                        :value="subtaskProgress(task.subtasks)"
+                                        color="emerald"
+                                    />
+                                </div>
+
+                                <!-- Subtasks Interactive Checklist -->
+                                <div
+                                    v-if="
+                                        expandedSubtasks[task.id] ||
+                                        (task.subtasks &&
+                                            task.subtasks.length > 0)
+                                    "
+                                    class="mt-2.5 space-y-1.5 rounded-lg border bg-muted/20 p-2"
+                                >
+                                    <div
+                                        v-for="subtask in task.subtasks ?? []"
+                                        :key="subtask.id"
+                                        class="group/sub flex items-center justify-between gap-2 rounded px-1.5 py-1 text-xs transition hover:bg-background"
+                                    >
+                                        <button
+                                            type="button"
+                                            class="flex min-w-0 flex-1 items-center gap-2 text-left"
+                                            @click="
+                                                toggleSubtask(task, subtask.id)
+                                            "
+                                        >
+                                            <CheckCircle2
+                                                v-if="subtask.completed"
+                                                class="size-3.5 shrink-0 text-emerald-500"
+                                            />
+                                            <Circle
+                                                v-else
+                                                class="size-3.5 shrink-0 text-muted-foreground"
+                                            />
+                                            <span
+                                                :class="[
+                                                    'truncate',
+                                                    subtask.completed
+                                                        ? 'text-muted-foreground line-through'
+                                                        : '',
+                                                ]"
+                                            >
+                                                {{ subtask.title }}
+                                            </span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="opacity-0 transition group-hover/sub:opacity-100 hover:text-rose-500"
+                                            aria-label="Remove subtask"
+                                            @click="
+                                                removeSubtask(task, subtask.id)
+                                            "
+                                        >
+                                            <X class="size-3" />
+                                        </button>
+                                    </div>
+
+                                    <form
+                                        v-if="expandedSubtasks[task.id]"
+                                        class="flex items-center gap-1.5 pt-1"
+                                        @submit.prevent="addInlineSubtask(task)"
+                                    >
+                                        <Input
+                                            v-model="
+                                                inlineSubtaskInputs[task.id]
+                                            "
+                                            placeholder="Add subtask..."
+                                            class="h-7 flex-1 text-xs"
+                                        />
+                                        <Button
+                                            type="submit"
+                                            size="sm"
+                                            variant="secondary"
+                                            class="h-7 px-2 text-[11px]"
+                                        >
+                                            <Plus class="size-3" />
+                                            Add
+                                        </Button>
+                                    </form>
                                 </div>
                             </div>
 
@@ -314,10 +524,16 @@ function removeTask(task: Task): void {
                                         <MoreHorizontal class="size-4" />
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" class="w-44">
+                                <DropdownMenuContent align="end" class="w-48">
                                     <DropdownMenuItem @click="editTask(task)">
                                         <Pencil class="size-4" />
-                                        Edit task
+                                        Edit task &amp; subtasks
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        @click="startTaskFocusTimer(task, 45)"
+                                    >
+                                        <Timer class="size-4" />
+                                        Start 45m Focus Timer
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuLabel
@@ -387,6 +603,7 @@ function removeTask(task: Task): void {
         v-model:open="dialogOpen"
         :task="editing"
         :projects="projects"
+        :events="events"
         :default-status="defaultStatus"
         :default-project-id="defaultProjectId"
     />

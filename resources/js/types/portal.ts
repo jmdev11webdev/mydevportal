@@ -28,16 +28,52 @@ export type Project = {
 export type TaskStatus = 'todo' | 'in_progress' | 'done';
 export type TaskPriority = 'low' | 'medium' | 'high';
 
-export type Task = {
+export type Subtask = {
+    id: string;
+    title: string;
+    completed: boolean;
+};
+
+export type CalendarEventType =
+    | 'sprint'
+    | 'meeting'
+    | 'release'
+    | 'deep_work'
+    | 'deadline'
+    | 'personal';
+
+export type CalendarEvent = {
     id: number;
     project_id: number | null;
     title: string;
     description: string | null;
+    type: CalendarEventType;
+    color: ProjectColor;
+    starts_at: string;
+    ends_at: string | null;
+    start_time: string | null;
+    end_time: string | null;
+    location: string | null;
+    is_all_day: boolean;
+    project?: Pick<Project, 'id' | 'name' | 'color'> | null;
+    tasks?: Task[];
+    created_at: string;
+    updated_at: string;
+};
+
+export type Task = {
+    id: number;
+    project_id: number | null;
+    calendar_event_id?: number | null;
+    title: string;
+    description: string | null;
+    subtasks?: Subtask[] | null;
     status: TaskStatus;
     priority: TaskPriority;
     due_date: string | null;
     completed_at: string | null;
     project?: Pick<Project, 'id' | 'name' | 'color'> | null;
+    event?: Pick<CalendarEvent, 'id' | 'title' | 'color' | 'starts_at'> | null;
     created_at: string;
     updated_at: string;
 };

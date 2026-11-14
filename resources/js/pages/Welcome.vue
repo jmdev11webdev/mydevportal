@@ -2,6 +2,7 @@
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import {
     ArrowRight,
+    CalendarDays,
     Check,
     Command,
     Download,
@@ -35,7 +36,13 @@ const features = [
         icon: ListChecks,
         title: 'A focus board that moves',
         description:
-            'Capture, prioritise and ship. A three-column board with zero ceremony.',
+            'Capture, prioritise and ship with nested subtasks and three-column clarity.',
+    },
+    {
+        icon: CalendarDays,
+        title: 'Interactive calendar & events',
+        description:
+            'Schedule sprints, releases and events with bundled tasks, subtasks, and project milestones in one view.',
     },
     {
         icon: GraduationCap,

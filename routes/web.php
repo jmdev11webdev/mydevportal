@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\CareerEntryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DemoLoginController;
@@ -27,10 +28,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('readme', ReadmeController::class)->name('readme.index');
     Route::get('eye-care', EyeCareController::class)->name('eye-care.index');
 
+    Route::resource('calendar', CalendarController::class)
+        ->except(['show', 'create', 'edit'])
+        ->parameters(['calendar' => 'calendarEvent']);
+    Route::post('calendar/{calendarEvent}/tasks', [CalendarController::class, 'storeTask'])
+        ->name('calendar.tasks.store');
+
     Route::resource('projects', ProjectController::class)->except(['show', 'create', 'edit']);
 
     Route::resource('tasks', TaskController::class)->except(['show', 'create', 'edit']);
     Route::patch('tasks/{task}/toggle', [TaskController::class, 'toggle'])->name('tasks.toggle');
+    Route::post('tasks/{task}/subtasks', [TaskController::class, 'storeSubtask'])->name('tasks.subtasks.store');
+    Route::patch('tasks/{task}/subtasks/{subtaskId}/toggle', [TaskController::class, 'toggleSubtask'])
+        ->name('tasks.subtasks.toggle');
+    Route::delete('tasks/{task}/subtasks/{subtaskId}', [TaskController::class, 'destroySubtask'])
+        ->name('tasks.subtasks.destroy');
 
     Route::resource('learning', LearningResourceController::class)
         ->except(['show', 'create', 'edit'])

@@ -2,6 +2,7 @@
 import { Link } from '@inertiajs/vue3';
 import {
     BookOpen,
+    CalendarDays,
     Eye,
     FileCode,
     FolderGit2,
@@ -43,6 +44,11 @@ const mainNavItems: NavItem[] = [
         title: 'Tasks',
         href: '/tasks',
         icon: ListChecks,
+    },
+    {
+        title: 'Calendar',
+        href: '/calendar',
+        icon: CalendarDays,
     },
     {
         title: 'Learning',

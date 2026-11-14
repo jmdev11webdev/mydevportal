@@ -32,6 +32,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useEyeCareTimer } from '@/composables/useEyeCareTimer';
 import {
+    calendarEventTypeClasses,
+    calendarEventTypeLabel,
     careerStatusClasses,
     careerStatusLabel,
     noteColorClasses,
@@ -41,6 +43,7 @@ import {
 } from '@/lib/colors';
 import { isOverdue, relativeDate, todayInput } from '@/lib/format';
 import type {
+    CalendarEvent,
     CareerEntry,
     LearningResource,
     Note,
@@ -67,6 +70,7 @@ const props = defineProps<{
     };
     todayTasks: Task[];
     upcomingTasks: Task[];
+    upcomingEvents?: CalendarEvent[];
     projects: Project[];
     learning: LearningResource[];
     notes: Note[];
@@ -477,6 +481,23 @@ function progressFor(project: Project): number {
                                     >
                                         · {{ task.priority }} priority
                                     </span>
+                                    <span
+                                        v-if="task.subtasks?.length"
+                                        class="rounded border bg-muted/40 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground"
+                                    >
+                                        {{
+                                            task.subtasks.filter(
+                                                (s) => s.completed,
+                                            ).length
+                                        }}/{{ task.subtasks.length }} subtasks
+                                    </span>
+                                    <Link
+                                        v-if="task.event"
+                                        href="/calendar"
+                                        class="rounded border border-indigo-500/30 bg-indigo-500/10 px-1.5 py-0.5 text-[10px] text-indigo-700 dark:text-indigo-300"
+                                    >
+                                        {{ task.event.title }}
+                                    </Link>
                                 </div>
                             </div>
                             <Badge
@@ -500,6 +521,75 @@ function progressFor(project: Project): number {
                             Use the capture box above to add the next step.
                         </p>
                     </div>
+                </section>
+
+                <section class="rounded-2xl border bg-card p-5 shadow-sm">
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-2">
+                            <CalendarDays class="size-4 text-indigo-500" />
+                            <h2 class="text-sm font-semibold">
+                                Upcoming calendar events
+                            </h2>
+                        </div>
+                        <Link
+                            href="/calendar"
+                            class="flex items-center gap-1 text-xs font-medium text-muted-foreground transition hover:text-foreground"
+                        >
+                            Open calendar
+                            <ArrowUpRight class="size-3.5" />
+                        </Link>
+                    </div>
+
+                    <div
+                        v-if="upcomingEvents?.length"
+                        class="mt-4 grid gap-3 sm:grid-cols-2"
+                    >
+                        <Link
+                            v-for="ev in upcomingEvents"
+                            :key="ev.id"
+                            href="/calendar"
+                            class="group rounded-xl border bg-muted/20 p-3.5 transition hover:border-foreground/20 hover:bg-muted/40"
+                        >
+                            <div
+                                class="flex items-center justify-between gap-2"
+                            >
+                                <div class="flex items-center gap-2">
+                                    <span
+                                        :class="[
+                                            'size-2 rounded-full',
+                                            projectColorClasses[ev.color].dot,
+                                        ]"
+                                    />
+                                    <p
+                                        class="line-clamp-1 text-sm font-semibold"
+                                    >
+                                        {{ ev.title }}
+                                    </p>
+                                </div>
+                                <Badge
+                                    variant="outline"
+                                    class="shrink-0 text-[10px]"
+                                    :class="calendarEventTypeClasses[ev.type]"
+                                >
+                                    {{ calendarEventTypeLabel[ev.type] }}
+                                </Badge>
+                            </div>
+                            <div
+                                class="mt-2 flex items-center justify-between text-[11px] text-muted-foreground"
+                            >
+                                <span>{{ relativeDate(ev.starts_at) }}</span>
+                                <span v-if="ev.tasks?.length">
+                                    {{ ev.tasks.length }} bundled task{{
+                                        ev.tasks.length === 1 ? '' : 's'
+                                    }}
+                                </span>
+                            </div>
+                        </Link>
+                    </div>
+                    <p v-else class="mt-4 text-sm text-muted-foreground">
+                        No upcoming events. Schedule sprints, releases or deep
+                        work on your calendar.
+                    </p>
                 </section>
 
                 <section class="rounded-2xl border bg-card p-5 shadow-sm">
@@ -589,9 +679,7 @@ function progressFor(project: Project): number {
             </div>
 
             <div class="flex flex-col gap-4">
-                <section
-                    class="rounded-2xl border bg-card p-5 shadow-sm"
-                >
+                <section class="rounded-2xl border bg-card p-5 shadow-sm">
                     <div class="flex items-center justify-between gap-3">
                         <div class="flex items-center gap-2">
                             <Eye class="size-4 text-emerald-500" />
@@ -608,9 +696,7 @@ function progressFor(project: Project): number {
                         </Link>
                     </div>
 
-                    <div
-                        class="mt-3 rounded-xl border bg-muted/20 p-3.5"
-                    >
+                    <div class="mt-3 rounded-xl border bg-muted/20 p-3.5">
                         <div class="flex items-center justify-between gap-2">
                             <div>
                                 <p
@@ -643,9 +729,7 @@ function progressFor(project: Project): number {
                         <ProgressBar
                             class="mt-3"
                             :value="eyeProgressPercent"
-                            :color="
-                                eyePhase === 'rest' ? 'emerald' : 'indigo'
-                            "
+                            :color="eyePhase === 'rest' ? 'emerald' : 'indigo'"
                         />
 
                         <div class="mt-3 flex flex-wrap items-center gap-2">

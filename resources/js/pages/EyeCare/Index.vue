@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { Head } from '@inertiajs/vue3';
 import {
     Activity,
@@ -11,6 +11,7 @@ import {
     Compass,
     Eye,
     Flame,
+    Hourglass,
     Pause,
     Play,
     RefreshCw,
@@ -24,10 +25,13 @@ import {
     VolumeX,
 } from '@lucide/vue';
 import PageHeader from '@/components/PageHeader.vue';
+import ProgressBar from '@/components/ProgressBar.vue';
 import StatCard from '@/components/StatCard.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { useEyeCareTimer } from '@/composables/useEyeCareTimer';
 
 defineOptions({
@@ -55,7 +59,38 @@ const {
     triggerRestNow,
     skipRest,
     resetDailyStats,
+    // Reciprocal Custom Duration Timer
+    durationTargetMinutes,
+    durationRunning,
+    syncDurationWithEyeCare,
+    durationLabel,
+    isDurationPausedByEyeBreak,
+    durationProgressPercent,
+    formattedDurationRemaining,
+    formattedDurationElapsed,
+    isDurationDefaultState,
+    setDurationMinutes,
+    toggleDurationTimer,
+    stopDurationTimer,
 } = useEyeCareTimer();
+
+const customMinutesInput = ref(durationTargetMinutes.value);
+const sessionLabelInput = ref(durationLabel.value ?? '');
+
+const durationPresets = [15, 25, 45, 60, 90, 120];
+
+function applyCustomDuration(): void {
+    const mins = Number(customMinutesInput.value);
+    if (!Number.isFinite(mins) || mins < 1) {
+        return;
+    }
+    setDurationMinutes(mins, sessionLabelInput.value.trim() || null);
+}
+
+function selectPreset(mins: number): void {
+    customMinutesInput.value = mins;
+    setDurationMinutes(mins, sessionLabelInput.value.trim() || null);
+}
 
 const circleRadius = 96;
 const circleCircumference = 2 * Math.PI * circleRadius;
@@ -129,7 +164,7 @@ const developerHabits = [
         <PageHeader
             eyebrow="Developer Wellness & Ergonomics"
             title="20-20-20 Eye Care & Stop-Timer"
-            description="Protect your vision during deep coding sessions with an evidence-based 20-20-20 timer backed by peer-reviewed optometric research."
+            description="Protect your vision during deep coding sessions with an evidence-based 20-20-20 timer and reciprocal duration counter backed by peer-reviewed optometric research."
             :icon="Eye"
         >
             <template #actions>
@@ -360,7 +395,7 @@ const developerHabits = [
                                 @click="stopTimer"
                             >
                                 <RotateCcw class="size-4" />
-                                Stop & Reset (20:00)
+                                Stop &amp; Reset (20:00)
                             </Button>
 
                             <Button
@@ -399,7 +434,7 @@ const developerHabits = [
                         <div class="flex items-center gap-2">
                             <Bell class="size-4 text-indigo-500" />
                             <h2 class="text-base font-semibold">
-                                Timer Preferences & Ergonomics
+                                Timer Preferences &amp; Ergonomics
                             </h2>
                         </div>
                         <Button
@@ -503,7 +538,7 @@ const developerHabits = [
                                 Stepping away for a meeting, standup, or lunch?
                                 Hit
                                 <span class="font-medium text-foreground"
-                                    >Stop & Reset</span
+                                    >Stop &amp; Reset</span
                                 >
                                 so your next 20-minute interval starts fresh the
                                 moment you sit back down at your keyboard.
@@ -513,6 +548,258 @@ const developerHabits = [
                 </div>
             </section>
         </div>
+
+        <!-- Reciprocal Custom Duration Timer Section -->
+        <section class="rounded-2xl border bg-card p-6 shadow-sm">
+            <div
+                class="flex flex-col justify-between gap-4 border-b pb-5 lg:flex-row lg:items-center"
+            >
+                <div>
+                    <div class="flex items-center gap-2">
+                        <Hourglass class="size-4 text-sky-500" />
+                        <p
+                            class="text-[11px] font-semibold tracking-[0.16em] text-sky-600 uppercase dark:text-sky-400"
+                        >
+                            Reciprocal Work Duration Counter
+                        </p>
+                    </div>
+                    <h2 class="mt-1 text-xl font-semibold tracking-tight">
+                        Custom Duration Timer (Auto-Pauses During 20-20-20 Eye
+                        Breaks)
+                    </h2>
+                    <p class="mt-1 max-w-3xl text-sm text-muted-foreground">
+                        Track deep work blocks of any duration (e.g. 25m, 45m,
+                        60m, 90m). Whenever the 20-20-20 rule enters its
+                        20-second eye rest phase, this duration counter
+                        <span class="font-medium text-foreground"
+                            >automatically pauses</span
+                        >
+                        and resumes the moment your break completes.
+                    </p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                    <Badge
+                        v-if="isDurationPausedByEyeBreak"
+                        variant="outline"
+                        class="animate-pulse border-amber-500/40 bg-amber-500/15 px-3 py-1 text-xs font-semibold text-amber-700 dark:text-amber-300"
+                    >
+                        Auto-Paused by 20-20-20 Eye Break ({{
+                            remainingSeconds
+                        }}s left)
+                    </Badge>
+                    <Badge
+                        v-else-if="durationRunning"
+                        variant="outline"
+                        class="border-sky-500/30 bg-sky-500/10 px-3 py-1 text-xs font-semibold text-sky-700 dark:text-sky-300"
+                    >
+                        Counting Active Work Duration
+                    </Badge>
+                    <Badge v-else variant="outline" class="px-3 py-1 text-xs">
+                        {{
+                            isDurationDefaultState ? 'Ready' : 'Duration Paused'
+                        }}
+                    </Badge>
+                </div>
+            </div>
+
+            <div class="mt-6 grid gap-6 lg:grid-cols-[1fr_1.15fr]">
+                <div
+                    :class="[
+                        'flex flex-col justify-between rounded-2xl border p-5 transition-colors',
+                        isDurationPausedByEyeBreak
+                            ? 'border-amber-500/40 bg-amber-500/5'
+                            : 'bg-muted/20',
+                    ]"
+                >
+                    <div>
+                        <div class="flex items-center justify-between gap-2">
+                            <span
+                                class="text-xs font-semibold tracking-wider text-muted-foreground uppercase"
+                            >
+                                {{
+                                    durationLabel ||
+                                    `${durationTargetMinutes}-Minute Focus Session`
+                                }}
+                            </span>
+                            <span
+                                class="font-mono text-xs text-muted-foreground"
+                            >
+                                Elapsed work: {{ formattedDurationElapsed }}
+                            </span>
+                        </div>
+
+                        <div class="mt-3 flex items-baseline gap-3">
+                            <p
+                                class="font-mono text-5xl font-bold tracking-tight tabular-nums"
+                            >
+                                {{ formattedDurationRemaining }}
+                            </p>
+                            <span class="text-xs text-muted-foreground">
+                                remaining ({{ durationProgressPercent }}%)
+                            </span>
+                        </div>
+
+                        <ProgressBar
+                            class="mt-4"
+                            :value="durationProgressPercent"
+                            :color="
+                                isDurationPausedByEyeBreak ? 'amber' : 'sky'
+                            "
+                        />
+
+                        <p
+                            v-if="isDurationPausedByEyeBreak"
+                            class="mt-3 text-xs font-medium text-amber-700 dark:text-amber-300"
+                        >
+                            20-20-20 Rule is active! Your duration counter is
+                            holding at {{ formattedDurationRemaining }} while
+                            you look 20 feet away.
+                        </p>
+                        <p v-else class="mt-3 text-xs text-muted-foreground">
+                            Every 20 minutes of work triggers a 20-second eye
+                            break without deducting from your work duration.
+                        </p>
+                    </div>
+
+                    <div class="mt-5 flex flex-wrap items-center gap-2.5">
+                        <Button
+                            size="default"
+                            @click="
+                                () => {
+                                    if (sessionLabelInput.trim()) {
+                                        durationLabel =
+                                            sessionLabelInput.trim();
+                                    }
+                                    toggleDurationTimer();
+                                }
+                            "
+                        >
+                            <Pause
+                                v-if="
+                                    durationRunning &&
+                                    !isDurationPausedByEyeBreak
+                                "
+                                class="size-4"
+                            />
+                            <Play v-else class="size-4" />
+                            {{
+                                isDurationPausedByEyeBreak
+                                    ? 'Waiting for 20s Break...'
+                                    : durationRunning
+                                      ? 'Pause Duration'
+                                      : isDurationDefaultState
+                                        ? 'Start Duration Timer'
+                                        : 'Resume Duration'
+                            }}
+                        </Button>
+
+                        <Button
+                            type="button"
+                            variant="outline"
+                            :disabled="isDurationDefaultState"
+                            @click="stopDurationTimer"
+                        >
+                            <RotateCcw class="size-4" />
+                            Stop &amp; Reset Duration
+                        </Button>
+                    </div>
+                </div>
+
+                <div class="flex flex-col justify-between gap-4">
+                    <div>
+                        <Label
+                            class="text-xs font-semibold tracking-wider text-muted-foreground uppercase"
+                        >
+                            Quick Duration Presets
+                        </Label>
+                        <div class="mt-2 flex flex-wrap gap-2">
+                            <Button
+                                v-for="preset in durationPresets"
+                                :key="preset"
+                                type="button"
+                                size="sm"
+                                :variant="
+                                    durationTargetMinutes === preset
+                                        ? 'default'
+                                        : 'outline'
+                                "
+                                @click="selectPreset(preset)"
+                            >
+                                {{ preset }} min
+                            </Button>
+                        </div>
+                    </div>
+
+                    <div class="grid gap-3 sm:grid-cols-2">
+                        <div class="grid gap-1.5">
+                            <Label for="custom-duration-mins" class="text-xs">
+                                Custom duration (minutes)
+                            </Label>
+                            <div class="flex items-center gap-2">
+                                <Input
+                                    id="custom-duration-mins"
+                                    v-model.number="customMinutesInput"
+                                    type="number"
+                                    min="1"
+                                    max="480"
+                                    class="h-9"
+                                    @change="applyCustomDuration"
+                                />
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    class="h-9"
+                                    @click="applyCustomDuration"
+                                >
+                                    Set
+                                </Button>
+                            </div>
+                        </div>
+
+                        <div class="grid gap-1.5">
+                            <Label for="duration-session-label" class="text-xs">
+                                Session / task label (optional)
+                            </Label>
+                            <Input
+                                id="duration-session-label"
+                                v-model="sessionLabelInput"
+                                placeholder="e.g. Deep work: API refactor"
+                                class="h-9"
+                                @blur="
+                                    durationLabel =
+                                        sessionLabelInput.trim() || null
+                                "
+                            />
+                        </div>
+                    </div>
+
+                    <label
+                        for="pref-sync-duration"
+                        class="flex cursor-pointer items-start gap-3 rounded-xl border bg-muted/20 p-3.5 transition hover:bg-muted/40"
+                    >
+                        <Checkbox
+                            id="pref-sync-duration"
+                            v-model="syncDurationWithEyeCare"
+                            class="mt-0.5"
+                        />
+                        <div class="text-xs">
+                            <p class="font-semibold text-foreground">
+                                Auto-start 20-20-20 Eye Care rule when Duration
+                                Timer starts
+                            </p>
+                            <p class="mt-0.5 text-muted-foreground">
+                                Ensures the 20-20-20 timer runs alongside your
+                                duration timer and automatically pauses the
+                                duration count during every 20-second eye rest
+                                break.
+                            </p>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </section>
 
         <section class="grid gap-4 md:grid-cols-3">
             <article
@@ -550,7 +837,7 @@ const developerHabits = [
                         <p
                             class="text-[11px] font-semibold tracking-[0.16em] text-emerald-600 uppercase dark:text-emerald-400"
                         >
-                            Peer-Reviewed Literature & Clinical Guidelines
+                            Peer-Reviewed Literature &amp; Clinical Guidelines
                         </p>
                     </div>
                     <h2 class="mt-1 text-xl font-semibold tracking-tight">

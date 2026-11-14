@@ -1,4 +1,5 @@
 import type {
+    CalendarEventType,
     CareerStatus,
     CareerType,
     LearningStatus,
@@ -190,4 +191,26 @@ export const careerStatusClasses: Record<CareerStatus, string> = {
         'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
     archived:
         'border-slate-500/30 bg-slate-500/10 text-slate-500 dark:text-slate-400',
+};
+
+export const calendarEventTypeLabel: Record<CalendarEventType, string> = {
+    sprint: 'Sprint',
+    meeting: 'Meeting',
+    release: 'Release',
+    deep_work: 'Deep work',
+    deadline: 'Deadline',
+    personal: 'Personal',
+};
+
+export const calendarEventTypeClasses: Record<CalendarEventType, string> = {
+    sprint: 'border-indigo-500/30 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300',
+    meeting: 'border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-300',
+    release:
+        'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
+    deep_work:
+        'border-violet-500/30 bg-violet-500/10 text-violet-700 dark:text-violet-300',
+    deadline:
+        'border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-300',
+    personal:
+        'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300',
 };

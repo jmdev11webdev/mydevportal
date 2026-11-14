@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\CalendarEvent;
 use App\Models\CareerEntry;
 use App\Models\LearningResource;
 use App\Models\Note;
@@ -10,6 +11,7 @@ use App\Models\Task;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class DemoSeeder extends Seeder
 {
@@ -27,6 +29,10 @@ class DemoSeeder extends Seeder
         );
 
         if ($user->projects()->exists()) {
+            if (! $user->calendarEvents()->exists()) {
+                $this->backfillCalendarForExistingUser($user);
+            }
+
             return;
         }
 
@@ -75,28 +81,138 @@ class DemoSeeder extends Seeder
             return [$project->name => $project];
         });
 
+        $events = collect([
+            [
+                'title' => 'Orbit Ingestion Architecture Sprint',
+                'description' => 'Deep work block to finalize schema, rate limits, and zero-cookie event ingestion.',
+                'project' => 'Orbit',
+                'type' => 'sprint',
+                'color' => 'indigo',
+                'starts_at' => now()->toDateString(),
+                'ends_at' => now()->addDays(2)->toDateString(),
+                'start_time' => '09:30',
+                'end_time' => '12:00',
+                'location' => 'Focus Studio',
+                'is_all_day' => false,
+            ],
+            [
+                'title' => 'Pulse API Webhook Release & Hardening',
+                'description' => 'Roll out Redis token bucket rate limiting and verify retry backoff.',
+                'project' => 'Pulse API',
+                'type' => 'release',
+                'color' => 'emerald',
+                'starts_at' => now()->addDay()->toDateString(),
+                'ends_at' => null,
+                'start_time' => '14:00',
+                'end_time' => '15:30',
+                'location' => 'GitHub Actions / Prod',
+                'is_all_day' => false,
+            ],
+            [
+                'title' => 'System Design Mock Interview',
+                'description' => 'Practice multi-tenant audit log and notification pipeline trade-offs.',
+                'project' => null,
+                'type' => 'meeting',
+                'color' => 'violet',
+                'starts_at' => now()->addDays(2)->toDateString(),
+                'ends_at' => null,
+                'start_time' => '16:00',
+                'end_time' => '17:00',
+                'location' => 'Meet',
+                'is_all_day' => false,
+            ],
+        ])->mapWithKeys(function (array $attributes) use ($user, $projects) {
+            $projectName = $attributes['project'];
+            unset($attributes['project']);
+
+            $event = CalendarEvent::create([
+                ...$attributes,
+                'user_id' => $user->id,
+                'project_id' => $projectName ? $projects[$projectName]->id : null,
+            ]);
+
+            return [$event->title => $event];
+        });
+
         $tasks = [
-            ['Write aggregate event ingestion spec', 'Orbit', 'in_progress', 'high', 0, null],
-            ['Polish onboarding empty states', 'Orbit', 'todo', 'medium', 0, null],
-            ['Audit third-party scripts for trackers', 'Orbit', 'todo', 'high', -1, null],
-            ['Add rate limiting to webhook endpoint', 'Pulse API', 'in_progress', 'high', 1, null],
-            ['Document queue retry strategy', 'Pulse API', 'todo', 'low', 3, null],
-            ['Draft copy for the about page', 'Devfolio', 'todo', 'medium', 5, null],
-            ['Pick a domain name', 'Devfolio', 'todo', 'low', 7, null],
-            ['Set up CI pipeline for releases', 'CLI Toolkit', 'done', 'medium', null, 2],
-            ['Publish v0.4.0 changelog', 'CLI Toolkit', 'done', 'low', null, 4],
-            ['Refactor auth guards into policies', 'Pulse API', 'done', 'high', null, 1],
-            ['Weekly review + plan next sprint', null, 'todo', 'medium', 0, null],
-            ['Read 30 pages of DDIA', null, 'todo', 'low', 0, null],
-            ['Prepare system design interview notes', null, 'in_progress', 'high', 2, null],
-            ['Cancel unused SaaS subscriptions', null, 'done', 'low', null, 5],
+            [
+                'Write aggregate event ingestion spec',
+                'Orbit',
+                'Orbit Ingestion Architecture Sprint',
+                'in_progress',
+                'high',
+                0,
+                null,
+                [
+                    ['title' => 'Define JSON payload schema', 'completed' => true],
+                    ['title' => 'Benchmark SQLite WAL batch inserts', 'completed' => true],
+                    ['title' => 'Document privacy anonymization rules', 'completed' => false],
+                ],
+            ],
+            [
+                'Polish onboarding empty states',
+                'Orbit',
+                'Orbit Ingestion Architecture Sprint',
+                'todo',
+                'medium',
+                0,
+                null,
+                [
+                    ['title' => 'Design first-project CTA card', 'completed' => true],
+                    ['title' => 'Add copyable snippet preview', 'completed' => false],
+                ],
+            ],
+            ['Audit third-party scripts for trackers', 'Orbit', null, 'todo', 'high', -1, null, []],
+            [
+                'Add rate limiting to webhook endpoint',
+                'Pulse API',
+                'Pulse API Webhook Release & Hardening',
+                'in_progress',
+                'high',
+                1,
+                null,
+                [
+                    ['title' => 'Configure per-tenant limiter in AppServiceProvider', 'completed' => true],
+                    ['title' => 'Add Retry-After headers + feature tests', 'completed' => false],
+                ],
+            ],
+            ['Document queue retry strategy', 'Pulse API', 'Pulse API Webhook Release & Hardening', 'todo', 'low', 3, null, []],
+            ['Draft copy for the about page', 'Devfolio', null, 'todo', 'medium', 5, null, []],
+            ['Pick a domain name', 'Devfolio', null, 'todo', 'low', 7, null, []],
+            ['Set up CI pipeline for releases', 'CLI Toolkit', null, 'done', 'medium', null, 2, []],
+            ['Publish v0.4.0 changelog', 'CLI Toolkit', null, 'done', 'low', null, 4, []],
+            ['Refactor auth guards into policies', 'Pulse API', null, 'done', 'high', null, 1, []],
+            ['Weekly review + plan next sprint', null, null, 'todo', 'medium', 0, null, []],
+            ['Read 30 pages of DDIA', null, null, 'todo', 'low', 0, null, []],
+            [
+                'Prepare system design interview notes',
+                null,
+                'System Design Mock Interview',
+                'in_progress',
+                'high',
+                2,
+                null,
+                [
+                    ['title' => 'Review back-of-the-envelope capacity math', 'completed' => true],
+                    ['title' => 'Sketch dead-letter queue recovery flow', 'completed' => false],
+                ],
+            ],
+            ['Cancel unused SaaS subscriptions', null, null, 'done', 'low', null, 5, []],
         ];
 
-        foreach ($tasks as [$title, $projectName, $status, $priority, $dueOffset, $completedDaysAgo]) {
+        foreach ($tasks as [$title, $projectName, $eventName, $status, $priority, $dueOffset, $completedDaysAgo, $rawSubtasks]) {
+            $subtasks = collect($rawSubtasks)->map(fn (array $item): array => [
+                'id' => (string) Str::uuid(),
+                'title' => $item['title'],
+                'completed' => $item['completed'],
+            ])->values()->all();
+
             Task::create([
                 'user_id' => $user->id,
                 'project_id' => $projectName === null ? null : $projects[$projectName]->id,
+                'calendar_event_id' => $eventName === null ? null : $events[$eventName]->id,
                 'title' => $title,
+                'subtasks' => $subtasks,
                 'status' => $status,
                 'priority' => $priority,
                 'due_date' => $dueOffset === null ? null : now()->addDays($dueOffset)->toDateString(),
@@ -273,5 +389,92 @@ class DemoSeeder extends Seeder
         foreach ($career as $entry) {
             CareerEntry::create([...$entry, 'user_id' => $user->id]);
         }
+    }
+
+    public function backfillCalendarForExistingUser(User $user): void
+    {
+        if ($user->calendarEvents()->exists()) {
+            return;
+        }
+
+        $projects = $user->projects()->get()->keyBy('name');
+
+        $sprintEvent = CalendarEvent::create([
+            'user_id' => $user->id,
+            'project_id' => $projects['Orbit']->id ?? null,
+            'title' => 'Orbit Ingestion Architecture Sprint',
+            'description' => 'Deep work block to finalize schema, rate limits, and zero-cookie event ingestion.',
+            'type' => 'sprint',
+            'color' => 'indigo',
+            'starts_at' => now()->toDateString(),
+            'ends_at' => now()->addDays(2)->toDateString(),
+            'start_time' => '09:30',
+            'end_time' => '12:00',
+            'location' => 'Focus Studio',
+            'is_all_day' => false,
+        ]);
+
+        $releaseEvent = CalendarEvent::create([
+            'user_id' => $user->id,
+            'project_id' => $projects['Pulse API']->id ?? null,
+            'title' => 'Pulse API Webhook Release & Hardening',
+            'description' => 'Roll out Redis token bucket rate limiting and verify retry backoff.',
+            'type' => 'release',
+            'color' => 'emerald',
+            'starts_at' => now()->addDay()->toDateString(),
+            'ends_at' => null,
+            'start_time' => '14:00',
+            'end_time' => '15:30',
+            'location' => 'GitHub Actions / Prod',
+            'is_all_day' => false,
+        ]);
+
+        $interviewEvent = CalendarEvent::create([
+            'user_id' => $user->id,
+            'project_id' => null,
+            'title' => 'System Design Mock Interview',
+            'description' => 'Practice multi-tenant audit log and notification pipeline trade-offs.',
+            'type' => 'meeting',
+            'color' => 'violet',
+            'starts_at' => now()->addDays(2)->toDateString(),
+            'ends_at' => null,
+            'start_time' => '16:00',
+            'end_time' => '17:00',
+            'location' => 'Meet',
+            'is_all_day' => false,
+        ]);
+
+        $user->tasks()->where('title', 'Write aggregate event ingestion spec')->update([
+            'calendar_event_id' => $sprintEvent->id,
+            'subtasks' => [
+                ['id' => (string) Str::uuid(), 'title' => 'Define JSON payload schema', 'completed' => true],
+                ['id' => (string) Str::uuid(), 'title' => 'Benchmark SQLite WAL batch inserts', 'completed' => true],
+                ['id' => (string) Str::uuid(), 'title' => 'Document privacy anonymization rules', 'completed' => false],
+            ],
+        ]);
+
+        $user->tasks()->where('title', 'Polish onboarding empty states')->update([
+            'calendar_event_id' => $sprintEvent->id,
+            'subtasks' => [
+                ['id' => (string) Str::uuid(), 'title' => 'Design first-project CTA card', 'completed' => true],
+                ['id' => (string) Str::uuid(), 'title' => 'Add copyable snippet preview', 'completed' => false],
+            ],
+        ]);
+
+        $user->tasks()->where('title', 'Add rate limiting to webhook endpoint')->update([
+            'calendar_event_id' => $releaseEvent->id,
+            'subtasks' => [
+                ['id' => (string) Str::uuid(), 'title' => 'Configure per-tenant limiter in AppServiceProvider', 'completed' => true],
+                ['id' => (string) Str::uuid(), 'title' => 'Add Retry-After headers + feature tests', 'completed' => false],
+            ],
+        ]);
+
+        $user->tasks()->where('title', 'Prepare system design interview notes')->update([
+            'calendar_event_id' => $interviewEvent->id,
+            'subtasks' => [
+                ['id' => (string) Str::uuid(), 'title' => 'Review back-of-the-envelope capacity math', 'completed' => true],
+                ['id' => (string) Str::uuid(), 'title' => 'Sketch dead-letter queue recovery flow', 'completed' => false],
+            ],
+        ]);
     }
 }

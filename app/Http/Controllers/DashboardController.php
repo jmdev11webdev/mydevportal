@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CalendarEvent;
 use App\Models\CareerEntry;
 use App\Models\LearningResource;
 use App\Models\Note;
 use App\Models\Project;
 use App\Models\Task;
+use Database\Seeders\DemoSeeder;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -16,6 +18,10 @@ class DashboardController extends Controller
     public function __invoke(Request $request): Response
     {
         $user = $request->user();
+
+        if ($user->email === DemoSeeder::EMAIL && ! $user->calendarEvents()->exists()) {
+            app(DemoSeeder::class)->backfillCalendarForExistingUser($user);
+        }
         $today = now()->startOfDay();
         $weekStart = now()->startOfWeek();
         $weekEnd = now()->endOfWeek();
@@ -54,7 +60,7 @@ class DashboardController extends Controller
         $stats['streak'] = $streak;
 
         $todayTasks = $taskQuery()
-            ->with('project:id,name,color')
+            ->with(['project:id,name,color', 'event:id,title,color,starts_at'])
             ->where('status', '!=', 'done')
             ->whereDate('due_date', '<=', $today)
             ->orderByRaw("CASE priority WHEN 'high' THEN 1 WHEN 'medium' THEN 2 ELSE 3 END")
@@ -63,11 +69,22 @@ class DashboardController extends Controller
             ->get();
 
         $upcomingTasks = $taskQuery()
-            ->with('project:id,name,color')
+            ->with(['project:id,name,color', 'event:id,title,color,starts_at'])
             ->where('status', '!=', 'done')
             ->whereDate('due_date', '>', $today)
             ->orderBy('due_date')
             ->limit(5)
+            ->get();
+
+        $upcomingEvents = CalendarEvent::where('user_id', $user->id)
+            ->with(['project:id,name,color', 'tasks:id,calendar_event_id,title,status,subtasks'])
+            ->where(function ($query) use ($today) {
+                $query->whereDate('starts_at', '>=', $today)
+                    ->orWhereDate('ends_at', '>=', $today);
+            })
+            ->orderBy('starts_at')
+            ->orderBy('start_time')
+            ->limit(4)
             ->get();
 
         $projects = Project::query()
@@ -122,6 +139,7 @@ class DashboardController extends Controller
             'stats' => $stats,
             'todayTasks' => $todayTasks,
             'upcomingTasks' => $upcomingTasks,
+            'upcomingEvents' => $upcomingEvents,
             'projects' => $projects,
             'learning' => $learning,
             'notes' => $notes,

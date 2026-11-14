@@ -14,8 +14,10 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property int $user_id
  * @property int|null $project_id
+ * @property int|null $calendar_event_id
  * @property string $title
  * @property string|null $description
+ * @property array<int, array{id: string, title: string, completed: bool}>|null $subtasks
  * @property string $status
  * @property string $priority
  * @property Carbon|null $due_date
@@ -23,12 +25,15 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Project|null $project
+ * @property-read CalendarEvent|null $event
  */
 #[Fillable([
     'user_id',
     'project_id',
+    'calendar_event_id',
     'title',
     'description',
+    'subtasks',
     'status',
     'priority',
     'due_date',
@@ -45,6 +50,7 @@ class Task extends Model
     protected function casts(): array
     {
         return [
+            'subtasks' => 'array',
             'due_date' => 'date',
             'completed_at' => 'datetime',
         ];
@@ -64,6 +70,14 @@ class Task extends Model
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    /**
+     * @return BelongsTo<CalendarEvent, $this>
+     */
+    public function event(): BelongsTo
+    {
+        return $this->belongsTo(CalendarEvent::class, 'calendar_event_id');
     }
 
     /**
