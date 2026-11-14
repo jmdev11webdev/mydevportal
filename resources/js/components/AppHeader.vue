@@ -63,8 +63,8 @@ const mainNavItems: NavItem[] = [
 
 const rightNavItems: NavItem[] = [
     {
-        title: 'Repository',
-        href: 'https://github.com/laravel/vue-starter-kit',
+        title: 'Source code',
+        href: 'https://www.github.com/jmdev11webdev/mydevportal',
         icon: Folder,
     },
     {

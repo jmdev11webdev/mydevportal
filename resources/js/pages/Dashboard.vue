@@ -7,13 +7,17 @@ import {
     CalendarDays,
     CheckCircle2,
     Circle,
+    Eye,
     Flame,
     FolderKanban,
     GraduationCap,
     ListChecks,
     Lock,
     NotebookPen,
+    Pause,
+    Play,
     Plus,
+    RotateCcw,
     Sparkles,
     Target,
     TrendingUp,
@@ -26,6 +30,7 @@ import TaskDialog from '@/components/portal/TaskDialog.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useEyeCareTimer } from '@/composables/useEyeCareTimer';
 import {
     careerStatusClasses,
     careerStatusLabel,
@@ -74,6 +79,18 @@ const user = computed(() => page.props.auth.user);
 
 const taskDialogOpen = ref(false);
 const noteDialogOpen = ref(false);
+
+const {
+    phase: eyePhase,
+    isRunning: eyeTimerRunning,
+    formattedTime: eyeFormattedTime,
+    progressPercent: eyeProgressPercent,
+    cyclesToday: eyeCyclesToday,
+    isDefaultState: eyeIsDefaultState,
+    toggleTimer: toggleEyeTimer,
+    stopTimer: stopEyeTimer,
+    triggerRestNow: triggerEyeRestNow,
+} = useEyeCareTimer();
 
 const quickCapture = useForm({
     title: '',
@@ -572,6 +589,121 @@ function progressFor(project: Project): number {
             </div>
 
             <div class="flex flex-col gap-4">
+                <section
+                    class="rounded-2xl border bg-card p-5 shadow-sm"
+                >
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-2">
+                            <Eye class="size-4 text-emerald-500" />
+                            <h2 class="text-sm font-semibold">
+                                20-20-20 Eye Care
+                            </h2>
+                        </div>
+                        <Link
+                            href="/eye-care"
+                            class="flex items-center gap-1 text-xs font-medium text-muted-foreground transition hover:text-foreground"
+                        >
+                            Study & sources
+                            <ArrowUpRight class="size-3.5" />
+                        </Link>
+                    </div>
+
+                    <div
+                        class="mt-3 rounded-xl border bg-muted/20 p-3.5"
+                    >
+                        <div class="flex items-center justify-between gap-2">
+                            <div>
+                                <p
+                                    class="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase"
+                                >
+                                    {{
+                                        eyePhase === 'rest'
+                                            ? '20s Distance Break (20ft)'
+                                            : '20m Focus Countdown'
+                                    }}
+                                </p>
+                                <p
+                                    class="mt-0.5 font-mono text-2xl font-bold tracking-tight tabular-nums"
+                                >
+                                    {{ eyeFormattedTime }}
+                                </p>
+                            </div>
+                            <Badge
+                                variant="outline"
+                                :class="
+                                    eyePhase === 'rest'
+                                        ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
+                                        : 'border-indigo-500/30 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300'
+                                "
+                            >
+                                {{ eyeCyclesToday }} cycles today
+                            </Badge>
+                        </div>
+
+                        <ProgressBar
+                            class="mt-3"
+                            :value="eyeProgressPercent"
+                            :color="
+                                eyePhase === 'rest' ? 'emerald' : 'indigo'
+                            "
+                        />
+
+                        <div class="mt-3 flex flex-wrap items-center gap-2">
+                            <Button
+                                size="sm"
+                                class="h-8 flex-1 text-xs"
+                                @click="toggleEyeTimer"
+                            >
+                                <Pause
+                                    v-if="eyeTimerRunning"
+                                    class="size-3.5"
+                                />
+                                <Play v-else class="size-3.5" />
+                                {{
+                                    eyeTimerRunning
+                                        ? 'Pause'
+                                        : eyeIsDefaultState
+                                          ? 'Start 20m'
+                                          : 'Resume'
+                                }}
+                            </Button>
+                            <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                class="h-8 text-xs"
+                                :disabled="eyeIsDefaultState"
+                                @click="stopEyeTimer"
+                            >
+                                <RotateCcw class="size-3.5" />
+                                Stop
+                            </Button>
+                            <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                class="h-8 text-xs"
+                                @click="triggerEyeRestNow"
+                            >
+                                20s Break
+                            </Button>
+                        </div>
+                    </div>
+
+                    <p
+                        class="mt-2.5 text-[11px] leading-relaxed text-muted-foreground"
+                    >
+                        Every 20m, look 20ft away for 20s. Backed by
+                        <Link
+                            href="/eye-care"
+                            class="font-medium text-foreground underline underline-offset-2"
+                        >
+                            Talens-Estarelles et al. (2023) &amp; AOA
+                        </Link>
+                        to reduce digital eye strain.
+                    </p>
+                </section>
+
                 <section class="rounded-2xl border bg-card p-5 shadow-sm">
                     <div class="flex items-center justify-between gap-3">
                         <div class="flex items-center gap-2">

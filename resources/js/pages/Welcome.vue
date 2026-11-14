@@ -5,6 +5,7 @@ import {
     Check,
     Command,
     Download,
+    Eye,
     FileCode,
     Flame,
     FolderGit2,
@@ -59,6 +60,12 @@ const features = [
         title: 'READMEs that ship',
         description:
             'Generate a polished README from any project, preview it live and copy the markdown.',
+    },
+    {
+        icon: Eye,
+        title: '20-20-20 Eye Care Timer',
+        description:
+            'Science-backed focus & rest stop-timer with peer-reviewed clinical sources to prevent digital eye strain.',
     },
     {
         icon: WifiOff,
@@ -634,6 +641,13 @@ const privacyPoints = [
                     >
                     <a href="#privacy" class="transition hover:text-slate-300"
                         >Privacy</a
+                    >
+                    <a
+                        href="https://www.github.com/jmdev11webdev/mydevportal"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="transition hover:text-slate-300"
+                        >Source code</a
                     >
                     <Link href="/login" class="transition hover:text-slate-300"
                         >Log in</Link

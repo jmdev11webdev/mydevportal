@@ -2,6 +2,7 @@
 import { Link } from '@inertiajs/vue3';
 import {
     BookOpen,
+    Eye,
     FileCode,
     FolderGit2,
     GraduationCap,
@@ -63,6 +64,11 @@ const mainNavItems: NavItem[] = [
         href: '/readme',
         icon: FileCode,
     },
+    {
+        title: 'Eye Care',
+        href: '/eye-care',
+        icon: Eye,
+    },
 ];
 
 const footerNavItems: NavItem[] = [
@@ -73,7 +79,7 @@ const footerNavItems: NavItem[] = [
     },
     {
         title: 'Source code',
-        href: 'https://github.com/laravel/vue-starter-kit',
+        href: 'https://www.github.com/jmdev11webdev/mydevportal',
         icon: BookOpen,
     },
 ];

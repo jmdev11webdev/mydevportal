@@ -3,6 +3,7 @@
 use App\Http\Controllers\CareerEntryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DemoLoginController;
+use App\Http\Controllers\EyeCareController;
 use App\Http\Controllers\GitHubAuthController;
 use App\Http\Controllers\LearningResourceController;
 use App\Http\Controllers\NoteController;
@@ -24,6 +25,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
 
     Route::get('readme', ReadmeController::class)->name('readme.index');
+    Route::get('eye-care', EyeCareController::class)->name('eye-care.index');
 
     Route::resource('projects', ProjectController::class)->except(['show', 'create', 'edit']);
 
