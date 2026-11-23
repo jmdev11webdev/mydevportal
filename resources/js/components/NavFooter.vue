@@ -6,6 +6,7 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    useSidebar,
 } from '@/components/ui/sidebar';
 import { toUrl } from '@/lib/utils';
 import type { NavItem } from '@/types';
@@ -16,6 +17,14 @@ type Props = {
 };
 
 defineProps<Props>();
+
+const { isMobile, setOpenMobile } = useSidebar();
+
+function handleLinkClick(): void {
+    if (isMobile.value) {
+        setOpenMobile(false);
+    }
+}
 
 function isExternal(href: NavItem['href']): boolean {
     return /^https?:\/\//.test(toUrl(href));
@@ -42,7 +51,7 @@ function isExternal(href: NavItem['href']): boolean {
                             <component :is="item.icon" />
                             <span>{{ item.title }}</span>
                         </a>
-                        <Link v-else :href="item.href">
+                        <Link v-else :href="item.href" @click="handleLinkClick">
                             <component :is="item.icon" />
                             <span>{{ item.title }}</span>
                         </Link>

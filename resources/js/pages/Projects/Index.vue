@@ -17,6 +17,7 @@ import EmptyState from '@/components/EmptyState.vue';
 import PageHeader from '@/components/PageHeader.vue';
 import ProgressBar from '@/components/ProgressBar.vue';
 import ProjectDialog from '@/components/portal/ProjectDialog.vue';
+import TechStackIcon from '@/components/portal/TechStackIcon.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -32,6 +33,7 @@ import {
     projectStatusClasses,
     projectStatusLabel,
 } from '@/lib/colors';
+import { getTechBadgeStyle } from '@/lib/techStack';
 import { formatShortDate, relativeDate } from '@/lib/format';
 import type { Project, ProjectStatus } from '@/types/portal';
 
@@ -265,9 +267,11 @@ function progressFor(project: Project): number {
                     <span
                         v-for="tech in project.tech_stack ?? []"
                         :key="tech"
-                        class="rounded-md border bg-muted/50 px-2 py-0.5 text-[11px] font-medium text-muted-foreground"
+                        :style="getTechBadgeStyle(tech)"
+                        class="inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[11px] font-medium text-foreground"
                     >
-                        {{ tech }}
+                        <TechStackIcon :name="tech" class="text-xs" />
+                        <span>{{ tech }}</span>
                     </span>
                     <span
                         v-if="!(project.tech_stack ?? []).length"

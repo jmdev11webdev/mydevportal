@@ -1,3 +1,9 @@
+import {
+    getTechBadgeStyle,
+    getTechIconClass,
+    resolveTechOption,
+} from '@/lib/techStack';
+
 function escapeHtml(value: string): string {
     return value
         .replace(/&/g, '&amp;')
@@ -9,6 +15,48 @@ function escapeHtml(value: string): string {
 
 function safeUrl(url: string): string | null {
     return /^(https?:\/\/|mailto:|\/)/i.test(url) ? url : null;
+}
+
+function isTechBadgeLine(line: string): boolean {
+    const trimmed = line.trim();
+    if (
+        !trimmed.startsWith('![') ||
+        !trimmed.includes('img.shields.io/badge/')
+    ) {
+        return false;
+    }
+
+    // Matches lines composed exclusively of shields.io tech badges (not License / GitHub stars)
+    const tokens = trimmed.match(/!\[[^\]]+\]\([^)\s]+\)/g) ?? [];
+    if (tokens.length === 0) {
+        return false;
+    }
+
+    const remainder = trimmed.replace(/!\[[^\]]+\]\([^)\s]+\)/g, '').trim();
+    if (remainder !== '') {
+        return false;
+    }
+
+    return !tokens.some(
+        (token) =>
+            token.startsWith('![License]') ||
+            token.startsWith('![GitHub stars]'),
+    );
+}
+
+function renderTechBadgePill(rawLabel: string): string {
+    const label = rawLabel.trim();
+    const safeLabel = escapeHtml(label);
+    const option = resolveTechOption(label);
+    const iconClass = getTechIconClass(label);
+    const style = getTechBadgeStyle(option?.label ?? label);
+    const inlineStyle = `background-color: ${style.backgroundColor}; border-color: ${style.borderColor};`;
+
+    const iconHtml = iconClass
+        ? `<i class="${escapeHtml(iconClass)} readme-tech-icon" aria-hidden="true"></i>`
+        : `<span class="readme-tech-dot" aria-hidden="true"></span>`;
+
+    return `<span class="readme-tech-pill" style="${inlineStyle}">${iconHtml}<span>${safeLabel}</span></span>`;
 }
 
 function renderInline(value: string): string {
@@ -54,6 +102,28 @@ function renderInline(value: string): string {
         /\uE000CODE(\d+)\uE000/g,
         (_, index: string) => codeSpans[Number(index)] ?? '',
     );
+}
+
+function splitTableRow(line: string): string[] {
+    const trimmed = line.trim().replace(/^\|/, '').replace(/\|$/, '');
+    return trimmed.split('|').map((cell) => cell.trim());
+}
+
+function isTableSeparator(line: string): boolean {
+    const cells = splitTableRow(line);
+    return cells.length > 0 && cells.every((cell) => /^:?-{3,}:?$/.test(cell));
+}
+
+function parseTableAlignments(line: string): ('left' | 'center' | 'right')[] {
+    return splitTableRow(line).map((cell) => {
+        if (cell.startsWith(':') && cell.endsWith(':')) {
+            return 'center';
+        }
+        if (cell.endsWith(':')) {
+            return 'right';
+        }
+        return 'left';
+    });
 }
 
 /**
@@ -107,7 +177,8 @@ export function renderMarkdown(markdown: string): string {
         codeLines = [];
     };
 
-    for (const line of lines) {
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
         const fence = line.match(/^```([\w-]*)\s*$/);
 
         if (fence) {
@@ -144,6 +215,72 @@ export function renderMarkdown(markdown: string): string {
 
             const level = heading[1].length;
             html.push(`<h${level}>${renderInline(heading[2])}</h${level}>`);
+
+            continue;
+        }
+
+        // Markdown tables: header row + separator row + 0..N body rows
+        if (
+            line.includes('|') &&
+            i + 1 < lines.length &&
+            isTableSeparator(lines[i + 1])
+        ) {
+            flushParagraph();
+            closeList();
+
+            const headers = splitTableRow(line);
+            const alignments = parseTableAlignments(lines[i + 1]);
+            i += 2;
+
+            const bodyRows: string[][] = [];
+            while (
+                i < lines.length &&
+                lines[i].trim() !== '' &&
+                lines[i].includes('|')
+            ) {
+                bodyRows.push(splitTableRow(lines[i]));
+                i++;
+            }
+            i--; // step back so loop increment lands on next line
+
+            const thead = `<thead><tr>${headers
+                .map((cell, col) => {
+                    const align = alignments[col] ?? 'left';
+                    return `<th style="text-align: ${align};">${renderInline(cell)}</th>`;
+                })
+                .join('')}</tr></thead>`;
+
+            const tbody =
+                bodyRows.length > 0
+                    ? `<tbody>${bodyRows
+                          .map(
+                              (row) =>
+                                  `<tr>${headers
+                                      .map((_, col) => {
+                                          const align =
+                                              alignments[col] ?? 'left';
+                                          return `<td style="text-align: ${align};">${renderInline(row[col] ?? '—')}</td>`;
+                                      })
+                                      .join('')}</tr>`,
+                          )
+                          .join('')}</tbody>`
+                    : '';
+
+            html.push(
+                `<div class="readme-table-wrap"><table>${thead}${tbody}</table></div>`,
+            );
+
+            continue;
+        }
+
+        if (isTechBadgeLine(line)) {
+            flushParagraph();
+            closeList();
+
+            const pills = [...line.matchAll(/!\[([^\]]+)\]\([^)\s]+\)/g)].map(
+                (match) => renderTechBadgePill(match[1]),
+            );
+            html.push(`<div class="readme-tech-list">${pills.join('')}</div>`);
 
             continue;
         }

@@ -99,4 +99,20 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     {
         return $this->hasMany(CalendarEvent::class);
     }
+
+    /**
+     * @return HasMany<PipelineLead, $this>
+     */
+    public function pipelineLeads(): HasMany
+    {
+        return $this->hasMany(PipelineLead::class);
+    }
+
+    /**
+     * @return HasMany<StackItem, $this>
+     */
+    public function stackItems(): HasMany
+    {
+        return $this->hasMany(StackItem::class);
+    }
 }

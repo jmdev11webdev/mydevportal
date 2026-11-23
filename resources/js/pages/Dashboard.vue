@@ -193,7 +193,7 @@ function progressFor(project: Project): number {
 
         <div class="grid gap-4 lg:grid-cols-3">
             <section
-                class="relative overflow-hidden rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 p-6 text-white shadow-lg lg:col-span-2"
+                class="relative overflow-hidden rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 p-5 text-white shadow-lg sm:p-6 lg:col-span-2"
             >
                 <div
                     class="pointer-events-none absolute inset-0 opacity-[0.07]"

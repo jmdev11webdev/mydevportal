@@ -8,8 +8,10 @@ use App\Http\Controllers\EyeCareController;
 use App\Http\Controllers\GitHubAuthController;
 use App\Http\Controllers\LearningResourceController;
 use App\Http\Controllers\NoteController;
+use App\Http\Controllers\PipelineLeadController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ReadmeController;
+use App\Http\Controllers\StackItemController;
 use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
 
@@ -56,6 +58,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('career', CareerEntryController::class)
         ->except(['show', 'create', 'edit'])
         ->parameters(['career' => 'careerEntry']);
+
+    Route::resource('pipeline', PipelineLeadController::class)
+        ->except(['show', 'create', 'edit'])
+        ->parameters(['pipeline' => 'pipelineLead']);
+
+    Route::resource('stack', StackItemController::class)
+        ->except(['show', 'create', 'edit'])
+        ->parameters(['stack' => 'stackItem']);
+    Route::patch('stack/{stackItem}/pin', [StackItemController::class, 'pin'])
+        ->name('stack.pin');
 });
 
 require __DIR__.'/settings.php';
