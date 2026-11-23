@@ -473,14 +473,22 @@ function submit(): void {
                                 class="h-8 flex-1 text-xs"
                                 @keydown.enter.prevent="addDraftTask"
                             />
-                            <select
-                                v-model="newTaskPriority"
-                                class="h-8 rounded-md border border-input bg-transparent px-2 text-xs"
-                            >
-                                <option value="low">Low</option>
-                                <option value="medium">Medium</option>
-                                <option value="high">High</option>
-                            </select>
+                            <Select v-model="newTaskPriority">
+                                <SelectTrigger
+                                    aria-label="New task priority"
+                                    size="sm"
+                                    class="w-full text-xs sm:w-28"
+                                >
+                                    <SelectValue placeholder="Priority" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="low">Low</SelectItem>
+                                    <SelectItem value="medium">
+                                        Medium
+                                    </SelectItem>
+                                    <SelectItem value="high">High</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
                         <div class="flex items-center gap-2">
                             <Input

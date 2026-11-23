@@ -7,6 +7,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
+import { useSidebar } from '@/components/ui/sidebar';
 import UserInfo from '@/components/UserInfo.vue';
 import { logout } from '@/routes';
 import { edit } from '@/routes/profile';
@@ -16,7 +17,16 @@ type Props = {
     user: User;
 };
 
+const { isMobile, setOpenMobile } = useSidebar();
+
+const closeMobile = () => {
+    if (isMobile.value) {
+        setOpenMobile(false);
+    }
+};
+
 const handleLogout = () => {
+    closeMobile();
     router.flushAll();
 };
 
@@ -32,7 +42,12 @@ defineProps<Props>();
     <DropdownMenuSeparator />
     <DropdownMenuGroup>
         <DropdownMenuItem :as-child="true">
-            <Link class="block w-full cursor-pointer" :href="edit()" prefetch>
+            <Link
+                class="block w-full cursor-pointer"
+                :href="edit()"
+                prefetch
+                @click="closeMobile"
+            >
                 <Settings class="mr-2 h-4 w-4" />
                 Settings
             </Link>

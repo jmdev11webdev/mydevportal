@@ -4,8 +4,11 @@ import type {
     CareerType,
     LearningStatus,
     NoteColor,
+    PipelineStage,
     ProjectColor,
     ProjectStatus,
+    StackCategory,
+    StackStatus,
     TaskPriority,
     TaskStatus,
 } from '@/types/portal';
@@ -213,4 +216,88 @@ export const calendarEventTypeClasses: Record<CalendarEventType, string> = {
         'border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-300',
     personal:
         'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300',
+};
+
+export const pipelineStages: PipelineStage[] = [
+    'new',
+    'contacted',
+    'proposal',
+    'won',
+    'lost',
+];
+
+export const pipelineStageLabel: Record<PipelineStage, string> = {
+    new: 'New',
+    contacted: 'Contacted',
+    proposal: 'Proposal',
+    won: 'Won',
+    lost: 'Lost',
+};
+
+export const pipelineStageClasses: Record<PipelineStage, string> = {
+    new: 'border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-300',
+    contacted:
+        'border-indigo-500/30 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300',
+    proposal:
+        'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300',
+    won: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
+    lost: 'border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-300',
+};
+
+export const stackCategories: StackCategory[] = [
+    'frontend',
+    'backend',
+    'database',
+    'devops',
+    'tooling',
+    'ai',
+];
+
+export const stackCategoryLabel: Record<StackCategory, string> = {
+    frontend: 'Frontend',
+    backend: 'Backend',
+    database: 'Database',
+    devops: 'DevOps',
+    tooling: 'Tooling',
+    ai: 'AI & Data',
+};
+
+export const stackCategoryClasses: Record<StackCategory, string> = {
+    frontend: 'border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-300',
+    backend:
+        'border-indigo-500/30 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300',
+    database:
+        'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
+    devops: 'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300',
+    tooling:
+        'border-slate-500/30 bg-slate-500/10 text-slate-700 dark:text-slate-300',
+    ai: 'border-violet-500/30 bg-violet-500/10 text-violet-700 dark:text-violet-300',
+};
+
+export const stackStatuses: StackStatus[] = [
+    'core',
+    'proficient',
+    'learning',
+    'evaluating',
+    'retired',
+];
+
+export const stackStatusLabel: Record<StackStatus, string> = {
+    core: 'Core',
+    proficient: 'Proficient',
+    learning: 'Learning',
+    evaluating: 'Evaluating',
+    retired: 'Retired',
+};
+
+export const stackStatusClasses: Record<StackStatus, string> = {
+    core: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
+    proficient:
+        'border-indigo-500/30 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300',
+    learning:
+        'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300',
+    evaluating:
+        'border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-300',
+    retired:
+        'border-slate-500/30 bg-slate-500/10 text-slate-500 dark:text-slate-400',
 };

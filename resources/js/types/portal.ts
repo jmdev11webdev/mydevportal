@@ -134,3 +134,63 @@ export type CareerEntry = {
     created_at: string;
     updated_at: string;
 };
+
+export type PipelineStage = 'new' | 'contacted' | 'proposal' | 'won' | 'lost';
+
+export type PipelineLead = {
+    id: number;
+    name: string;
+    company: string | null;
+    contact: string | null;
+    stage: PipelineStage;
+    source: string | null;
+    value: number | null;
+    follow_up_date: string | null;
+    notes: string | null;
+    won_at: string | null;
+    lost_at: string | null;
+    created_at: string;
+    updated_at: string;
+};
+
+export type PipelineSummary = {
+    total_count: number;
+    active_value: number;
+    won_value: number;
+    stages: Record<PipelineStage, { count: number; value: number }>;
+};
+
+export type StackCategory =
+    | 'frontend'
+    | 'backend'
+    | 'database'
+    | 'devops'
+    | 'tooling'
+    | 'ai';
+
+export type StackStatus =
+    | 'core'
+    | 'proficient'
+    | 'learning'
+    | 'evaluating'
+    | 'retired';
+
+export type StackItem = {
+    id: number;
+    name: string;
+    category: StackCategory;
+    status: StackStatus;
+    version: string | null;
+    url: string | null;
+    notes: string | null;
+    is_pinned: boolean;
+    created_at: string;
+    updated_at: string;
+};
+
+export type StackSummary = {
+    total: number;
+    core: number;
+    learning: number;
+    evaluating: number;
+};

@@ -2,17 +2,22 @@
 import { Link } from '@inertiajs/vue3';
 import {
     BookOpen,
+    Briefcase,
     CalendarDays,
     Eye,
     FileCode,
     FolderGit2,
+    FolderKanban,
     GraduationCap,
+    Layers,
     LayoutDashboard,
     ListChecks,
     Lock,
     NotebookPen,
     ShieldCheck,
+    Sparkles,
     Target,
+    TrendingUp,
 } from '@lucide/vue';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
@@ -26,54 +31,88 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    useSidebar,
 } from '@/components/ui/sidebar';
-import type { NavItem } from '@/types';
+import type { NavGroup, NavItem } from '@/types';
 
-const mainNavItems: NavItem[] = [
+const { isMobile, setOpenMobile } = useSidebar();
+
+const primaryNavItems: NavItem[] = [
     {
         title: 'Dashboard',
         href: '/dashboard',
         icon: LayoutDashboard,
     },
+];
+
+const navGroups: NavGroup[] = [
     {
-        title: 'Projects',
-        href: '/projects',
-        icon: FolderGit2,
+        title: 'Build & Ship',
+        icon: FolderKanban,
+        items: [
+            {
+                title: 'Projects',
+                href: '/projects',
+                icon: FolderGit2,
+            },
+            {
+                title: 'Tasks',
+                href: '/tasks',
+                icon: ListChecks,
+            },
+            {
+                title: 'Calendar',
+                href: '/calendar',
+                icon: CalendarDays,
+            },
+            {
+                title: 'Stack',
+                href: '/stack',
+                icon: Layers,
+            },
+            {
+                title: 'README',
+                href: '/readme',
+                icon: FileCode,
+            },
+        ],
     },
     {
-        title: 'Tasks',
-        href: '/tasks',
-        icon: ListChecks,
+        title: 'Growth & CRM',
+        icon: Briefcase,
+        items: [
+            {
+                title: 'Pipeline',
+                href: '/pipeline',
+                icon: TrendingUp,
+            },
+            {
+                title: 'Career',
+                href: '/career',
+                icon: Target,
+            },
+            {
+                title: 'Learning',
+                href: '/learning',
+                icon: GraduationCap,
+            },
+        ],
     },
     {
-        title: 'Calendar',
-        href: '/calendar',
-        icon: CalendarDays,
-    },
-    {
-        title: 'Learning',
-        href: '/learning',
-        icon: GraduationCap,
-    },
-    {
-        title: 'Notes',
-        href: '/notes',
-        icon: NotebookPen,
-    },
-    {
-        title: 'Career',
-        href: '/career',
-        icon: Target,
-    },
-    {
-        title: 'README',
-        href: '/readme',
-        icon: FileCode,
-    },
-    {
-        title: 'Eye Care',
-        href: '/eye-care',
-        icon: Eye,
+        title: 'Workspace & Care',
+        icon: Sparkles,
+        items: [
+            {
+                title: 'Notes',
+                href: '/notes',
+                icon: NotebookPen,
+            },
+            {
+                title: 'Eye Care',
+                href: '/eye-care',
+                icon: Eye,
+            },
+        ],
     },
 ];
 
@@ -89,6 +128,12 @@ const footerNavItems: NavItem[] = [
         icon: BookOpen,
     },
 ];
+
+function closeMobileSidebar(): void {
+    if (isMobile.value) {
+        setOpenMobile(false);
+    }
+}
 </script>
 
 <template>
@@ -97,7 +142,7 @@ const footerNavItems: NavItem[] = [
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
-                        <Link href="/dashboard">
+                        <Link href="/dashboard" @click="closeMobileSidebar">
                             <AppLogo />
                         </Link>
                     </SidebarMenuButton>
@@ -106,12 +151,16 @@ const footerNavItems: NavItem[] = [
         </SidebarHeader>
 
         <SidebarContent>
-            <NavMain :items="mainNavItems" label="Workspace" />
+            <NavMain
+                :items="primaryNavItems"
+                :groups="navGroups"
+                label="Workspace"
+            />
         </SidebarContent>
 
         <SidebarFooter>
             <div
-                class="mx-2 mb-1 hidden rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3 group-data-[collapsible=icon]:hidden"
+                class="mx-2 mb-1 hidden rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3 group-data-[collapsible=icon]:hidden md:block"
             >
                 <div class="flex items-center gap-2">
                     <Lock

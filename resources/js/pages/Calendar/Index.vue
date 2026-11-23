@@ -766,7 +766,7 @@ function startItemFocusTimer(label: string, minutes = 45): void {
                 </button>
 
                 <Select v-model="projectFilter">
-                    <SelectTrigger class="h-8 w-44 text-xs">
+                    <SelectTrigger class="h-8 w-full text-xs sm:w-44">
                         <SelectValue placeholder="All projects" />
                     </SelectTrigger>
                     <SelectContent>
@@ -788,146 +788,158 @@ function startItemFocusTimer(label: string, minutes = 45): void {
             <!-- Left: Month Grid OR Agenda Timeline -->
             <section
                 v-if="viewMode === 'month'"
-                class="overflow-hidden rounded-2xl border bg-card shadow-sm"
+                class="overflow-x-auto rounded-2xl border bg-card shadow-sm"
             >
-                <div
-                    class="grid grid-cols-7 border-b bg-muted/30 text-center text-[11px] font-semibold tracking-wider text-muted-foreground uppercase"
-                >
+                <div class="min-w-[600px]">
                     <div
-                        v-for="day in weekdayHeaders"
-                        :key="day"
-                        class="py-2.5"
+                        class="grid grid-cols-7 border-b bg-muted/30 text-center text-[11px] font-semibold tracking-wider text-muted-foreground uppercase"
                     >
-                        {{ day }}
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-7 divide-x divide-y">
-                    <div
-                        v-for="cell in calendarGridDays"
-                        :key="cell.dateStr"
-                        role="button"
-                        tabindex="0"
-                        :class="[
-                            'group relative flex min-h-28 cursor-pointer flex-col justify-between p-2 text-left transition',
-                            cell.inCurrentMonth
-                                ? 'bg-card hover:bg-muted/25'
-                                : 'bg-muted/15 text-muted-foreground/60 hover:bg-muted/30',
-                            selectedDate === cell.dateStr
-                                ? 'ring-2 ring-indigo-500 ring-inset'
-                                : '',
-                        ]"
-                        @click="selectedDate = cell.dateStr"
-                        @keydown.enter.prevent="selectedDate = cell.dateStr"
-                    >
-                        <div class="flex items-center justify-between">
-                            <span
-                                :class="[
-                                    'inline-flex size-6 items-center justify-center rounded-full text-xs font-semibold',
-                                    cell.isToday
-                                        ? 'bg-indigo-600 text-white'
-                                        : selectedDate === cell.dateStr
-                                          ? 'bg-foreground text-background'
-                                          : '',
-                                ]"
-                            >
-                                {{ cell.dayNumber }}
-                            </span>
-
-                            <button
-                                type="button"
-                                class="hidden size-5 items-center justify-center rounded text-muted-foreground transition group-hover:inline-flex hover:bg-muted hover:text-foreground"
-                                :aria-label="`Schedule on ${cell.dateStr}`"
-                                @click.stop="openCreateEvent(cell.dateStr)"
-                            >
-                                <Plus class="size-3.5" />
-                            </button>
+                        <div
+                            v-for="day in weekdayHeaders"
+                            :key="day"
+                            class="py-2.5"
+                        >
+                            {{ day }}
                         </div>
+                    </div>
 
-                        <div class="mt-1.5 flex flex-col gap-1">
-                            <!-- Events on this day -->
-                            <div
-                                v-for="ev in cell.events.slice(0, 2)"
-                                :key="`ev-${ev.id}`"
-                                :class="[
-                                    'flex items-center justify-between gap-1 truncate rounded px-1.5 py-0.5 text-[10px] font-medium',
-                                    projectColorClasses[ev.color].soft,
-                                    projectColorClasses[ev.color].text,
-                                ]"
-                            >
-                                <span class="truncate">{{ ev.title }}</span>
-                                <span
-                                    v-if="tasksInsideEvent(ev.id).length"
-                                    class="shrink-0 font-mono text-[9px] opacity-80"
-                                >
-                                    {{ tasksInsideEvent(ev.id).length }}t
-                                </span>
-                            </div>
-
-                            <!-- Tasks due on this day -->
-                            <div
-                                v-for="task in cell.tasks.slice(0, 2)"
-                                :key="`task-${task.id}`"
-                                class="flex items-center justify-between gap-1 truncate rounded border bg-muted/40 px-1.5 py-0.5 text-[10px]"
-                            >
+                    <div class="grid grid-cols-7 divide-x divide-y">
+                        <div
+                            v-for="cell in calendarGridDays"
+                            :key="cell.dateStr"
+                            role="button"
+                            tabindex="0"
+                            :class="[
+                                'group relative flex min-h-22 cursor-pointer flex-col justify-between p-1.5 text-left transition sm:min-h-28 sm:p-2',
+                                cell.inCurrentMonth
+                                    ? 'bg-card hover:bg-muted/25'
+                                    : 'bg-muted/15 text-muted-foreground/60 hover:bg-muted/30',
+                                selectedDate === cell.dateStr
+                                    ? 'ring-2 ring-indigo-500 ring-inset'
+                                    : '',
+                            ]"
+                            @click="selectedDate = cell.dateStr"
+                            @keydown.enter.prevent="selectedDate = cell.dateStr"
+                        >
+                            <div class="flex items-center justify-between">
                                 <span
                                     :class="[
-                                        'truncate',
-                                        task.status === 'done'
-                                            ? 'text-muted-foreground line-through'
-                                            : 'font-medium',
+                                        'inline-flex size-6 items-center justify-center rounded-full text-xs font-semibold',
+                                        cell.isToday
+                                            ? 'bg-indigo-600 text-white'
+                                            : selectedDate === cell.dateStr
+                                              ? 'bg-foreground text-background'
+                                              : '',
                                     ]"
                                 >
-                                    {{ task.title }}
+                                    {{ cell.dayNumber }}
                                 </span>
-                                <span
-                                    v-if="task.subtasks?.length"
-                                    class="shrink-0 font-mono text-[9px] text-muted-foreground"
+
+                                <button
+                                    type="button"
+                                    class="inline-flex size-5 items-center justify-center rounded text-muted-foreground transition hover:bg-muted hover:text-foreground sm:hidden sm:group-hover:inline-flex"
+                                    :aria-label="`Schedule on ${cell.dateStr}`"
+                                    @click.stop="openCreateEvent(cell.dateStr)"
+                                >
+                                    <Plus class="size-3.5" />
+                                </button>
+                            </div>
+
+                            <div class="mt-1.5 flex flex-col gap-1">
+                                <!-- Events on this day -->
+                                <div
+                                    v-for="ev in cell.events.slice(0, 2)"
+                                    :key="`ev-${ev.id}`"
+                                    :class="[
+                                        'flex items-center justify-between gap-1 truncate rounded px-1.5 py-0.5 text-[10px] font-medium',
+                                        projectColorClasses[ev.color].soft,
+                                        projectColorClasses[ev.color].text,
+                                    ]"
+                                >
+                                    <span class="truncate">{{ ev.title }}</span>
+                                    <span
+                                        v-if="tasksInsideEvent(ev.id).length"
+                                        class="shrink-0 font-mono text-[9px] opacity-80"
+                                    >
+                                        {{ tasksInsideEvent(ev.id).length }}t
+                                    </span>
+                                </div>
+
+                                <!-- Tasks due on this day -->
+                                <div
+                                    v-for="task in cell.tasks.slice(0, 2)"
+                                    :key="`task-${task.id}`"
+                                    class="flex items-center justify-between gap-1 truncate rounded border bg-muted/40 px-1.5 py-0.5 text-[10px]"
+                                >
+                                    <span
+                                        :class="[
+                                            'truncate',
+                                            task.status === 'done'
+                                                ? 'text-muted-foreground line-through'
+                                                : 'font-medium',
+                                        ]"
+                                    >
+                                        {{ task.title }}
+                                    </span>
+                                    <span
+                                        v-if="task.subtasks?.length"
+                                        class="shrink-0 font-mono text-[9px] text-muted-foreground"
+                                    >
+                                        {{
+                                            completedSubtasksCount(
+                                                task.subtasks,
+                                            )
+                                        }}/{{ task.subtasks.length }}
+                                    </span>
+                                </div>
+
+                                <!-- Project milestones -->
+                                <div
+                                    v-for="pm in cell.projectMilestones.slice(
+                                        0,
+                                        1,
+                                    )"
+                                    :key="pm.id"
+                                    class="truncate rounded border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:text-amber-300"
                                 >
                                     {{
-                                        completedSubtasksCount(task.subtasks)
-                                    }}/{{ task.subtasks.length }}
-                                </span>
-                            </div>
+                                        pm.kind === 'start' ? 'Start:' : 'Due:'
+                                    }}
+                                    {{ pm.project.name }}
+                                </div>
 
-                            <!-- Project milestones -->
-                            <div
-                                v-for="pm in cell.projectMilestones.slice(0, 1)"
-                                :key="pm.id"
-                                class="truncate rounded border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:text-amber-300"
-                            >
-                                {{ pm.kind === 'start' ? 'Start:' : 'Due:' }}
-                                {{ pm.project.name }}
-                            </div>
+                                <!-- Career milestones -->
+                                <div
+                                    v-for="cm in cell.careerMilestones.slice(
+                                        0,
+                                        1,
+                                    )"
+                                    :key="`career-${cm.id}`"
+                                    class="truncate rounded border border-rose-500/30 bg-rose-500/10 px-1.5 py-0.5 text-[10px] font-medium text-rose-700 dark:text-rose-300"
+                                >
+                                    {{ cm.title }}
+                                </div>
 
-                            <!-- Career milestones -->
-                            <div
-                                v-for="cm in cell.careerMilestones.slice(0, 1)"
-                                :key="`career-${cm.id}`"
-                                class="truncate rounded border border-rose-500/30 bg-rose-500/10 px-1.5 py-0.5 text-[10px] font-medium text-rose-700 dark:text-rose-300"
-                            >
-                                {{ cm.title }}
-                            </div>
-
-                            <span
-                                v-if="
-                                    cell.events.length +
+                                <span
+                                    v-if="
+                                        cell.events.length +
+                                            cell.tasks.length +
+                                            cell.projectMilestones.length +
+                                            cell.careerMilestones.length >
+                                        4
+                                    "
+                                    class="px-1 text-[10px] font-medium text-muted-foreground"
+                                >
+                                    +{{
+                                        cell.events.length +
                                         cell.tasks.length +
                                         cell.projectMilestones.length +
-                                        cell.careerMilestones.length >
-                                    4
-                                "
-                                class="px-1 text-[10px] font-medium text-muted-foreground"
-                            >
-                                +{{
-                                    cell.events.length +
-                                    cell.tasks.length +
-                                    cell.projectMilestones.length +
-                                    cell.careerMilestones.length -
-                                    3
-                                }}
-                                more
-                            </span>
+                                        cell.careerMilestones.length -
+                                        3
+                                    }}
+                                    more
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>

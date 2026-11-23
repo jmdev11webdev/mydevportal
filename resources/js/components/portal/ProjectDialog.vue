@@ -2,6 +2,7 @@
 import { computed, watch } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import InputError from '@/components/InputError.vue';
+import TechStackSelector from '@/components/portal/TechStackSelector.vue';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -53,6 +54,17 @@ const form = useForm({
 });
 
 const isEditing = computed(() => Boolean(props.project));
+
+const selectedTechStack = computed<string[]>({
+    get: () =>
+        form.tech_stack
+            .split(',')
+            .map((item) => item.trim())
+            .filter(Boolean),
+    set: (items) => {
+        form.tech_stack = items.join(', ');
+    },
+});
 
 function fillForm(): void {
     form.clearErrors();
@@ -214,16 +226,13 @@ function submit(): void {
                         id="project-stack-hint"
                         class="text-xs text-muted-foreground"
                     >
-                        Separate technologies with commas.
+                        Pick from Devicon technologies or add a custom tool.
                     </p>
-                    <Input
+                    <TechStackSelector
                         id="project-stack"
-                        v-model="form.tech_stack"
-                        placeholder="Vue, Laravel, SQLite"
+                        v-model="selectedTechStack"
+                        placeholder="Select stack (e.g. Laravel, Vue 3, TypeScript)..."
                         aria-describedby="project-stack-hint"
-                        autocorrect="off"
-                        autocapitalize="off"
-                        spellcheck="false"
                     />
                     <InputError :message="form.errors.tech_stack" />
                 </div>
