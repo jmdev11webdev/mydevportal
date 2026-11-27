@@ -6,7 +6,9 @@ import {
     getTechBadgeStyle,
     techStackCatalog,
     techStackGroups,
+    techStackPresets,
     type TechOption,
+    type TechStackPreset,
 } from '@/lib/techStack';
 import { cn } from '@/lib/utils';
 
@@ -127,6 +129,37 @@ function toggleOption(option: TechOption): void {
         emit('update:modelValue', [...props.modelValue, option.label]);
         emit('selectOption', option);
     }
+}
+
+function isPresetActive(preset: TechStackPreset): boolean {
+    return preset.items.every((item) => isSelected(item));
+}
+
+function togglePreset(preset: TechStackPreset): void {
+    if (props.disabled || !props.multiple) {
+        return;
+    }
+
+    if (isPresetActive(preset)) {
+        const presetLower = new Set(
+            preset.items.map((item) => item.toLowerCase()),
+        );
+        emit(
+            'update:modelValue',
+            props.modelValue.filter(
+                (item) => !presetLower.has(item.toLowerCase()),
+            ),
+        );
+        return;
+    }
+
+    const next = [...props.modelValue];
+    for (const item of preset.items) {
+        if (!isSelected(item)) {
+            next.push(item);
+        }
+    }
+    emit('update:modelValue', next);
 }
 
 function addCustom(): void {
@@ -250,11 +283,46 @@ onBeforeUnmount(() => {
                         v-model="query"
                         type="text"
                         placeholder="Search Devicon stack (e.g. Laravel, Vue, Docker)..."
-                        class="h-8 w-full rounded-md border border-input bg-background pr-2.5 pl-8 text-xs text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none dark:bg-input/30"
+                        class="h-8 w-full rounded-md border border-input bg-background pr-7 pl-8 text-xs text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none dark:bg-input/30"
                         @keydown.enter.prevent="
                             canAddCustom ? addCustom() : undefined
                         "
                     />
+                    <button
+                        v-if="query"
+                        type="button"
+                        aria-label="Clear search"
+                        class="absolute top-1/2 right-2 -translate-y-1/2 rounded-xs text-muted-foreground transition-colors hover:text-foreground"
+                        @click="query = ''"
+                    >
+                        <X class="size-3.5" />
+                    </button>
+                </div>
+
+                <div
+                    v-if="multiple"
+                    class="mt-2 flex flex-wrap items-center gap-1"
+                >
+                    <span
+                        class="mr-0.5 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase"
+                    >
+                        Stacks:
+                    </span>
+                    <button
+                        v-for="preset in techStackPresets"
+                        :key="preset.name"
+                        type="button"
+                        :title="preset.items.join(' + ')"
+                        class="rounded-md border px-1.5 py-0.5 text-[11px] font-medium transition-colors"
+                        :class="
+                            isPresetActive(preset)
+                                ? 'border-primary bg-primary text-primary-foreground'
+                                : 'border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground'
+                        "
+                        @click="togglePreset(preset)"
+                    >
+                        {{ preset.name }}
+                    </button>
                 </div>
 
                 <div class="mt-2 flex flex-wrap gap-1">

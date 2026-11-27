@@ -144,7 +144,7 @@ function entryIcon(entry: CareerEntry) {
 <template>
     <Head title="Career" />
 
-    <div class="flex flex-1 flex-col gap-6 p-4 md:p-6">
+    <div class="flex flex-1 flex-col gap-6 p-4 pb-24 md:p-6 md:pb-6">
         <PageHeader
             eyebrow="Private workspace"
             title="Career"
@@ -152,7 +152,7 @@ function entryIcon(entry: CareerEntry) {
             :icon="Target"
         >
             <template #actions>
-                <Button @click="createEntry()">
+                <Button class="hidden sm:inline-flex" @click="createEntry()">
                     <Plus class="size-4" />
                     New entry
                 </Button>
@@ -335,4 +335,15 @@ function entryIcon(entry: CareerEntry) {
         :entry="editing"
         :default-type="defaultType"
     />
+
+    <div class="fixed right-5 bottom-5 z-40 sm:hidden">
+        <Button
+            size="icon"
+            class="size-14 rounded-full shadow-lg"
+            aria-label="New entry"
+            @click="createEntry()"
+        >
+            <Plus class="size-6" />
+        </Button>
+    </div>
 </template>

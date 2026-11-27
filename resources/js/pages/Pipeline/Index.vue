@@ -267,7 +267,7 @@ const focusQuickAdd = () => {
 <template>
     <Head title="Pipeline" />
 
-    <div class="flex flex-1 flex-col gap-6 p-4 md:p-6">
+    <div class="flex flex-1 flex-col gap-6 p-4 pb-24 md:p-6 md:pb-6">
         <PageHeader
             eyebrow="Outreach & CRM"
             title="Pipeline"
@@ -275,7 +275,11 @@ const focusQuickAdd = () => {
             :icon="TrendingUp"
         >
             <template #actions>
-                <Button size="sm" @click="focusQuickAdd">
+                <Button
+                    size="sm"
+                    class="hidden sm:inline-flex"
+                    @click="focusQuickAdd"
+                >
                     <Plus class="size-4" />
                     New lead
                 </Button>
@@ -286,7 +290,7 @@ const focusQuickAdd = () => {
         <div
             class="flex flex-col gap-3 rounded-xl border bg-card p-3 sm:flex-row sm:items-center sm:justify-between"
         >
-            <div class="flex flex-wrap items-center gap-1.5">
+            <div class="hidden flex-wrap items-center gap-1.5 sm:flex">
                 <button
                     type="button"
                     class="inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition-colors"
@@ -350,16 +354,40 @@ const focusQuickAdd = () => {
                     </span>
                 </div>
 
-                <div class="relative w-full sm:w-56">
-                    <Search
-                        class="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground"
-                    />
-                    <Input
-                        v-model="searchQuery"
-                        type="search"
-                        placeholder="Filter leads..."
-                        class="h-8 pl-8 text-xs"
-                    />
+                <div class="flex w-full items-center gap-2 sm:w-56">
+                    <div class="relative min-w-0 flex-1">
+                        <Search
+                            class="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground"
+                        />
+                        <Input
+                            v-model="searchQuery"
+                            type="search"
+                            placeholder="Filter leads..."
+                            class="h-8 pl-8 text-xs"
+                        />
+                    </div>
+                    <Select v-model="activeStage">
+                        <SelectTrigger
+                            class="h-8 w-36 shrink-0 text-xs sm:hidden"
+                            aria-label="Filter leads by stage"
+                        >
+                            <SelectValue placeholder="All" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">
+                                All ({{ summary.total_count }})
+                            </SelectItem>
+                            <SelectItem
+                                v-for="stage in pipelineStages"
+                                :key="stage"
+                                :value="stage"
+                            >
+                                {{ pipelineStageLabel[stage] }} ({{
+                                    summary.stages[stage]?.count ?? 0
+                                }})
+                            </SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
             </div>
         </div>
@@ -717,6 +745,17 @@ const focusQuickAdd = () => {
                 </table>
             </div>
         </div>
+    </div>
+
+    <div class="fixed right-5 bottom-5 z-40 sm:hidden">
+        <Button
+            size="icon"
+            class="size-14 rounded-full shadow-lg"
+            aria-label="New lead"
+            @click="focusQuickAdd"
+        >
+            <Plus class="size-6" />
+        </Button>
     </div>
 </template>
 

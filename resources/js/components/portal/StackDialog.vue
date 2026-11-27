@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import InputError from '@/components/InputError.vue';
 import TechStackSelector from '@/components/portal/TechStackSelector.vue';
@@ -51,16 +51,26 @@ const stackForm = useForm({
 
 const isEditing = computed(() => Boolean(props.item));
 
-const selectedTool = computed<string[]>({
-    get: () => (stackForm.name.trim() ? [stackForm.name.trim()] : []),
-    set: (items) => {
-        stackForm.name = items[0] ?? '';
-    },
-});
+const selectedTools = ref<string[]>([]);
+const lastAutoName = ref('');
+
+function onToolsChange(items: string[]): void {
+    selectedTools.value = items;
+
+    const autoName = items.join(', ');
+    if (
+        !stackForm.name.trim() ||
+        stackForm.name.trim() === lastAutoName.value
+    ) {
+        stackForm.name = autoName;
+    }
+    lastAutoName.value = autoName;
+}
 
 function onSelectTech(option: TechOption): void {
-    stackForm.name = option.label;
-    stackForm.category = option.category;
+    if (selectedTools.value.length <= 1) {
+        stackForm.category = option.category;
+    }
 }
 
 function fillForm(): void {
@@ -74,6 +84,11 @@ function fillForm(): void {
         stackForm.url = props.item.url ?? '';
         stackForm.notes = props.item.notes ?? '';
         stackForm.is_pinned = props.item.is_pinned;
+        selectedTools.value = props.item.name
+            .split(',')
+            .map((part) => part.trim())
+            .filter(Boolean);
+        lastAutoName.value = props.item.name;
 
         return;
     }
@@ -82,6 +97,8 @@ function fillForm(): void {
     stackForm.category = props.defaultCategory ?? 'backend';
     stackForm.status = 'core';
     stackForm.is_pinned = false;
+    selectedTools.value = [];
+    lastAutoName.value = '';
 }
 
 watch(open, (isOpen) => {
@@ -121,15 +138,26 @@ function submit(): void {
 
             <form class="grid gap-4 py-2" @submit.prevent="submit">
                 <div class="grid gap-2">
-                    <Label for="stack-name">Technology / Tool</Label>
-                    <TechStackSelector
-                        id="stack-name"
-                        v-model="selectedTool"
-                        :multiple="false"
-                        placeholder="Choose a technology from Devicon..."
-                        @select-option="onSelectTech"
+                    <Label for="stack-custom-name">Stack / Tool name</Label>
+                    <Input
+                        id="stack-custom-name"
+                        v-model="stackForm.name"
+                        placeholder="e.g. TALL Stack, My SaaS Core, Laravel..."
+                        required
                     />
                     <InputError :message="stackForm.errors.name" />
+                </div>
+
+                <div class="grid gap-2">
+                    <Label for="stack-name">Technologies (optional multi-select)</Label>
+                    <TechStackSelector
+                        id="stack-name"
+                        :model-value="selectedTools"
+                        :multiple="true"
+                        placeholder="Pick technologies or presets (TALL, MERN, etc.)..."
+                        @update:model-value="onToolsChange"
+                        @select-option="onSelectTech"
+                    />
                 </div>
 
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">

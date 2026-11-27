@@ -29,6 +29,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {
     projectColorClasses,
     projectStatusClasses,
     projectStatusLabel,
@@ -126,7 +133,7 @@ function progressFor(project: Project): number {
 <template>
     <Head title="Projects" />
 
-    <div class="flex flex-1 flex-col gap-6 p-4 md:p-6">
+    <div class="flex flex-1 flex-col gap-6 p-4 pb-24 md:p-6 md:pb-6">
         <PageHeader
             eyebrow="Build"
             title="Projects"
@@ -134,7 +141,7 @@ function progressFor(project: Project): number {
             :icon="FolderKanban"
         >
             <template #actions>
-                <Button @click="createProject">
+                <Button class="hidden sm:inline-flex" @click="createProject">
                     <Plus class="size-4" />
                     New project
                 </Button>
@@ -142,7 +149,7 @@ function progressFor(project: Project): number {
         </PageHeader>
 
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <div class="flex flex-wrap items-center gap-2">
+            <div class="hidden flex-wrap items-center gap-2 sm:flex">
                 <button
                     v-for="item in filters"
                     :key="item.value"
@@ -162,15 +169,34 @@ function progressFor(project: Project): number {
                     </span>
                 </button>
             </div>
-            <div class="relative sm:ml-auto sm:w-64">
-                <Search
-                    class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
-                />
-                <Input
-                    v-model="search"
-                    class="pl-9"
-                    placeholder="Search projects or stack..."
-                />
+            <div class="flex items-center gap-2 sm:ml-auto sm:w-64">
+                <div class="relative min-w-0 flex-1">
+                    <Search
+                        class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+                    />
+                    <Input
+                        v-model="search"
+                        class="pl-9"
+                        placeholder="Search projects or stack..."
+                    />
+                </div>
+                <Select v-model="filter">
+                    <SelectTrigger
+                        class="w-36 shrink-0 sm:hidden"
+                        aria-label="Filter projects"
+                    >
+                        <SelectValue placeholder="All" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem
+                            v-for="item in filters"
+                            :key="item.value"
+                            :value="item.value"
+                        >
+                            {{ item.label }} ({{ filterCount(item.value) }})
+                        </SelectItem>
+                    </SelectContent>
+                </Select>
             </div>
         </div>
 
@@ -358,4 +384,15 @@ function progressFor(project: Project): number {
     </div>
 
     <ProjectDialog v-model:open="dialogOpen" :project="editing" />
+
+    <div class="fixed right-5 bottom-5 z-40 sm:hidden">
+        <Button
+            size="icon"
+            class="size-14 rounded-full shadow-lg"
+            aria-label="New project"
+            @click="createProject"
+        >
+            <Plus class="size-6" />
+        </Button>
+    </div>
 </template>

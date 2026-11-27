@@ -231,7 +231,7 @@ function startTaskFocusTimer(task: Task, minutes = 45): void {
 <template>
     <Head title="Tasks" />
 
-    <div class="flex flex-1 flex-col gap-6 p-4 md:p-6">
+    <div class="flex flex-1 flex-col gap-6 p-4 pb-24 md:p-6 md:pb-6">
         <PageHeader
             eyebrow="Focus"
             title="Tasks"
@@ -239,13 +239,13 @@ function startTaskFocusTimer(task: Task, minutes = 45): void {
             :icon="ListChecks"
         >
             <template #actions>
-                <Button variant="outline" as-child>
+                <Button variant="outline" class="hidden sm:inline-flex" as-child>
                     <Link href="/calendar">
                         <CalendarDays class="size-4" />
                         Open Calendar
                     </Link>
                 </Button>
-                <Button @click="createTask()">
+                <Button class="hidden sm:inline-flex" @click="createTask()">
                     <Plus class="size-4" />
                     New task
                 </Button>
@@ -607,4 +607,26 @@ function startTaskFocusTimer(task: Task, minutes = 45): void {
         :default-status="defaultStatus"
         :default-project-id="defaultProjectId"
     />
+
+    <div class="fixed right-5 bottom-5 z-40 flex flex-col items-end gap-3 sm:hidden">
+        <Button
+            variant="outline"
+            size="icon"
+            class="size-12 rounded-full bg-background/95 shadow-md backdrop-blur"
+            aria-label="Open calendar"
+            as-child
+        >
+            <Link href="/calendar">
+                <CalendarDays class="size-5" />
+            </Link>
+        </Button>
+        <Button
+            size="icon"
+            class="size-14 rounded-full shadow-lg"
+            aria-label="New task"
+            @click="createTask()"
+        >
+            <Plus class="size-6" />
+        </Button>
+    </div>
 </template>

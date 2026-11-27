@@ -502,6 +502,10 @@ const markdown = computed(() => {
         );
     }
 
+    blocks.push(
+        '---\n\n_Special README was made with [MyDevPortal](https://github.com/jmdev11webdev/mydevportal)_',
+    );
+
     return `${blocks.join('\n\n')}\n`;
 });
 
@@ -604,7 +608,7 @@ function applyProject(projectId: string): void {
     Object.assign(draft.enabled, {
         ...allEnabledFields,
         features: Boolean(draft.features.trim()),
-        techStack: Boolean(draft.techStack.trim()),
+        techStack: true,
         usage: Boolean(draft.usage.trim()),
         links: Boolean(repo || live || portfolio),
     });
@@ -747,7 +751,7 @@ function reset(): void {
 <template>
     <Head title="README generator" />
 
-    <div class="flex flex-1 flex-col gap-6 p-4 md:p-6">
+    <div class="flex min-w-0 flex-1 flex-col gap-6 overflow-x-hidden p-4 md:p-6">
         <PageHeader
             eyebrow="Ship"
             title="README generator"
@@ -755,28 +759,45 @@ function reset(): void {
             :icon="FileCode"
         >
             <template #actions>
-                <Button type="button" variant="outline" @click="reset">
-                    <RotateCcw class="size-4" />
-                    Reset
-                </Button>
-                <Button
-                    type="button"
-                    variant="outline"
-                    @click="downloadMarkdown"
-                >
-                    <Download class="size-4" />
-                    Download
-                </Button>
-                <Button type="button" @click="copyMarkdown">
-                    <Check v-if="copied" class="size-4" />
-                    <Copy v-else class="size-4" />
-                    {{ copied ? 'Copied' : 'Copy markdown' }}
-                </Button>
+                <div class="grid w-full grid-cols-3 gap-2 sm:flex sm:w-auto sm:items-center">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        class="w-full sm:w-auto"
+                        @click="reset"
+                    >
+                        <RotateCcw class="size-4" />
+                        <span>Reset</span>
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        class="w-full sm:w-auto"
+                        @click="downloadMarkdown"
+                    >
+                        <Download class="size-4" />
+                        <span>Download</span>
+                    </Button>
+                    <Button
+                        type="button"
+                        size="sm"
+                        class="w-full sm:w-auto"
+                        @click="copyMarkdown"
+                    >
+                        <Check v-if="copied" class="size-4" />
+                        <Copy v-else class="size-4" />
+                        <span class="truncate">{{
+                            copied ? 'Copied' : 'Copy'
+                        }}</span>
+                    </Button>
+                </div>
             </template>
         </PageHeader>
 
-        <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-            <div class="space-y-5 rounded-2xl border bg-card p-5 shadow-sm">
+        <div class="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+            <div class="min-w-0 space-y-5 rounded-2xl border bg-card p-4 shadow-sm sm:p-5">
                 <div class="grid gap-2">
                     <Label for="project">Start from a project</Label>
                     <Select
@@ -1066,7 +1087,7 @@ function reset(): void {
                 </div>
             </div>
 
-            <div class="xl:sticky xl:top-6 xl:self-start">
+            <div class="min-w-0 xl:sticky xl:top-6 xl:self-start">
                 <div
                     class="overflow-hidden rounded-2xl border bg-card shadow-sm"
                 >

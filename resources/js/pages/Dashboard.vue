@@ -4,6 +4,7 @@ import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3';
 import {
     ArrowRight,
     ArrowUpRight,
+    BarChart3,
     CalendarDays,
     CheckCircle2,
     Circle,
@@ -27,6 +28,9 @@ import ProgressBar from '@/components/ProgressBar.vue';
 import StatCard from '@/components/StatCard.vue';
 import NoteDialog from '@/components/portal/NoteDialog.vue';
 import TaskDialog from '@/components/portal/TaskDialog.vue';
+import ActivityPieChart, {
+    type PieSlice,
+} from '@/components/portal/ActivityPieChart.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -67,6 +71,21 @@ const props = defineProps<{
         notes: number;
         career_active: number;
         streak: number;
+    };
+    overall: {
+        projects: { total: number; completed: number; completion_rate: number };
+        tasks: { total: number; done: number; completion_rate: number };
+        pipeline: {
+            total: number;
+            won: number;
+            win_rate: number;
+            active_value: number;
+            won_value: number;
+        };
+        learning: { total: number; completed: number; avg_progress: number };
+        career: { total: number; achieved: number };
+        stack: { total: number };
+        workspace: { notes: number; events: number };
     };
     todayTasks: Task[];
     upcomingTasks: Task[];
@@ -134,6 +153,34 @@ const weekTotal = computed(() =>
     props.week.reduce((total, day) => total + day.count, 0),
 );
 
+const overallPieSlices = computed<PieSlice[]>(() => [
+    {
+        label: 'Tasks',
+        value: props.overall.tasks.total,
+        color: '#6366f1',
+    },
+    {
+        label: 'Projects',
+        value: props.overall.projects.total,
+        color: '#10b981',
+    },
+    {
+        label: 'Pipeline',
+        value: props.overall.pipeline.total,
+        color: '#f59e0b',
+    },
+    {
+        label: 'Career & Learn',
+        value: props.overall.career.total + props.overall.learning.total,
+        color: '#f43f5e',
+    },
+    {
+        label: 'Stack & Notes',
+        value: props.overall.stack.total + props.overall.workspace.notes,
+        color: '#0ea5e9',
+    },
+]);
+
 function captureTask(): void {
     if (!quickCapture.title.trim()) {
         return;
@@ -191,7 +238,7 @@ function progressFor(project: Project): number {
             </template>
         </PageHeader>
 
-        <div class="grid gap-4 lg:grid-cols-3">
+        <div class="grid gap-4 lg:grid-cols-4">
             <section
                 class="relative overflow-hidden rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 p-5 text-white shadow-lg sm:p-6 lg:col-span-2"
             >
@@ -288,6 +335,45 @@ function progressFor(project: Project): number {
                         </Link>
                     </div>
                 </div>
+            </section>
+
+            <section
+                class="flex flex-col justify-between rounded-2xl border bg-card p-5 shadow-sm"
+            >
+                <div class="flex items-start justify-between gap-2">
+                    <div>
+                        <p
+                            class="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground uppercase"
+                        >
+                            Overall statistics
+                        </p>
+                        <p class="mt-1 text-sm font-medium text-muted-foreground">
+                            {{ overall.tasks.completion_rate }}% tasks done ·
+                            ${{ overall.pipeline.won_value.toLocaleString() }} won
+                        </p>
+                    </div>
+                    <div
+                        class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-300"
+                    >
+                        <BarChart3 class="size-4" />
+                    </div>
+                </div>
+
+                <div class="my-4">
+                    <ActivityPieChart
+                        :slices="overallPieSlices"
+                        center-label="Items"
+                        :size="112"
+                    />
+                </div>
+
+                <Link
+                    href="/statistics"
+                    class="inline-flex items-center justify-between rounded-lg border bg-muted/30 px-3 py-2 text-xs font-medium transition hover:bg-muted/60"
+                >
+                    <span>View full breakdown</span>
+                    <ArrowUpRight class="size-3.5" />
+                </Link>
             </section>
 
             <section

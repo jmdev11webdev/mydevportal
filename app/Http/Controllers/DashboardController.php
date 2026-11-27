@@ -8,6 +8,7 @@ use App\Models\LearningResource;
 use App\Models\Note;
 use App\Models\Project;
 use App\Models\Task;
+use App\Support\PortalStatistics;
 use Database\Seeders\DemoSeeder;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -137,6 +138,7 @@ class DashboardController extends Controller
 
         return Inertia::render('Dashboard', [
             'stats' => $stats,
+            'overall' => PortalStatistics::forUser($user),
             'todayTasks' => $todayTasks,
             'upcomingTasks' => $upcomingTasks,
             'upcomingEvents' => $upcomingEvents,

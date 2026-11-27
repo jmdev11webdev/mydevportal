@@ -29,6 +29,13 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { learningStatusClasses, learningStatusLabel } from '@/lib/colors';
 import type {
     LearningFormat,
@@ -136,7 +143,7 @@ const summaryCards = computed(() => [
 <template>
     <Head title="Learning" />
 
-    <div class="flex flex-1 flex-col gap-6 p-4 md:p-6">
+    <div class="flex flex-1 flex-col gap-6 p-4 pb-24 md:p-6 md:pb-6">
         <PageHeader
             eyebrow="Grow"
             title="Learning"
@@ -144,7 +151,7 @@ const summaryCards = computed(() => [
             :icon="GraduationCap"
         >
             <template #actions>
-                <Button @click="createResource">
+                <Button class="hidden sm:inline-flex" @click="createResource">
                     <Plus class="size-4" />
                     New resource
                 </Button>
@@ -169,7 +176,7 @@ const summaryCards = computed(() => [
         </div>
 
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <div class="flex flex-wrap items-center gap-2">
+            <div class="hidden flex-wrap items-center gap-2 sm:flex">
                 <button
                     v-for="item in filters"
                     :key="item.value"
@@ -189,15 +196,34 @@ const summaryCards = computed(() => [
                     }}</span>
                 </button>
             </div>
-            <div class="relative sm:ml-auto sm:w-64">
-                <Search
-                    class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
-                />
-                <Input
-                    v-model="search"
-                    class="pl-9"
-                    placeholder="Search learning..."
-                />
+            <div class="flex items-center gap-2 sm:ml-auto sm:w-64">
+                <div class="relative min-w-0 flex-1">
+                    <Search
+                        class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+                    />
+                    <Input
+                        v-model="search"
+                        class="pl-9"
+                        placeholder="Search learning..."
+                    />
+                </div>
+                <Select v-model="filter">
+                    <SelectTrigger
+                        class="w-36 shrink-0 sm:hidden"
+                        aria-label="Filter learning resources"
+                    >
+                        <SelectValue placeholder="All" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem
+                            v-for="item in filters"
+                            :key="item.value"
+                            :value="item.value"
+                        >
+                            {{ item.label }} ({{ filterCount(item.value) }})
+                        </SelectItem>
+                    </SelectContent>
+                </Select>
             </div>
         </div>
 
@@ -363,4 +389,15 @@ const summaryCards = computed(() => [
     </div>
 
     <LearningDialog v-model:open="dialogOpen" :resource="editing" />
+
+    <div class="fixed right-5 bottom-5 z-40 sm:hidden">
+        <Button
+            size="icon"
+            class="size-14 rounded-full shadow-lg"
+            aria-label="New resource"
+            @click="createResource"
+        >
+            <Plus class="size-6" />
+        </Button>
+    </div>
 </template>

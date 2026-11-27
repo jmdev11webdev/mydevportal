@@ -3,6 +3,7 @@ import type { StackCategory } from '@/types/portal';
 export type TechOption = {
     label: string;
     iconClass: string;
+    customIcon?: 'laravel-cloud';
     category: StackCategory;
     group: string;
     brandColor: string;
@@ -252,6 +253,16 @@ export const techStackCatalog: TechOption[] = [
         aliases: ['nextjs', 'next'],
     },
     {
+        label: 'Angular',
+        iconClass: 'devicon-angular-plain colored',
+        category: 'frontend',
+        group: 'Frontend',
+        brandColor: '#DD0031',
+        badgeLogo: 'angular',
+        badgeTextColor: 'white',
+        aliases: ['angularjs'],
+    },
+    {
         label: 'Nuxt',
         iconClass: 'devicon-nuxtjs-plain colored',
         category: 'frontend',
@@ -357,6 +368,16 @@ export const techStackCatalog: TechOption[] = [
         brandColor: '#FF2D20',
         badgeLogo: 'laravel',
         badgeTextColor: 'white',
+    },
+    {
+        label: 'Livewire',
+        iconClass: 'devicon-livewire-plain colored',
+        category: 'backend',
+        group: 'Backend',
+        brandColor: '#FB70A9',
+        badgeLogo: 'livewire',
+        badgeTextColor: 'white',
+        aliases: ['laravel livewire'],
     },
     {
         label: 'Symfony',
@@ -577,6 +598,16 @@ export const techStackCatalog: TechOption[] = [
         badgeTextColor: 'white',
     },
     {
+        label: 'Apache',
+        iconClass: 'devicon-apache-plain colored',
+        category: 'devops',
+        group: 'DevOps & Cloud',
+        brandColor: '#D22128',
+        badgeLogo: 'apache',
+        badgeTextColor: 'white',
+        aliases: ['httpd'],
+    },
+    {
         label: 'Linux',
         iconClass: 'devicon-linux-plain text-foreground',
         category: 'devops',
@@ -593,6 +624,27 @@ export const techStackCatalog: TechOption[] = [
         brandColor: '#E95420',
         badgeLogo: 'ubuntu',
         badgeTextColor: 'white',
+    },
+    {
+        label: 'Debian',
+        iconClass: 'devicon-debian-plain colored',
+        category: 'devops',
+        group: 'DevOps & Cloud',
+        brandColor: '#A81D33',
+        badgeLogo: 'debian',
+        badgeTextColor: 'white',
+        aliases: ['debian linux', 'deb'],
+    },
+    {
+        label: 'Laravel Cloud',
+        iconClass: '',
+        customIcon: 'laravel-cloud',
+        category: 'devops',
+        group: 'DevOps & Cloud',
+        brandColor: '#FF2D20',
+        badgeLogo: 'laravel',
+        badgeTextColor: 'white',
+        aliases: ['cloud.laravel.com'],
     },
     {
         label: 'AWS',
@@ -780,6 +832,54 @@ export const techStackGroups = [
     'DevOps & Cloud',
     'Tooling & Testing',
 ] as const;
+
+export type TechStackPreset = {
+    name: string;
+    items: string[];
+};
+
+export const techStackPresets: TechStackPreset[] = [
+    {
+        name: 'TALL',
+        items: ['Tailwind CSS', 'Alpine.js', 'Laravel', 'Livewire'],
+    },
+    {
+        name: 'VILT',
+        items: ['Vue 3', 'Inertia', 'Laravel', 'Tailwind CSS'],
+    },
+    {
+        name: 'RILT',
+        items: ['React', 'Inertia', 'Laravel', 'Tailwind CSS'],
+    },
+    {
+        name: 'MERN',
+        items: ['MongoDB', 'Express', 'React', 'Node.js'],
+    },
+    {
+        name: 'MEAN',
+        items: ['MongoDB', 'Express', 'Angular', 'Node.js'],
+    },
+    {
+        name: 'MEVN',
+        items: ['MongoDB', 'Express', 'Vue 3', 'Node.js'],
+    },
+    {
+        name: 'PERN',
+        items: ['PostgreSQL', 'Express', 'React', 'Node.js'],
+    },
+    {
+        name: 'LAMP',
+        items: ['Linux', 'Apache', 'MySQL', 'PHP'],
+    },
+    {
+        name: 'LEMP',
+        items: ['Linux', 'Nginx', 'MySQL', 'PHP'],
+    },
+    {
+        name: 'T3',
+        items: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Prisma'],
+    },
+];
 
 export function resolveTechOption(name: string): TechOption | null {
     const normalized = name.trim().toLowerCase();

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 import {
+    BarChart3,
     BookOpen,
     Briefcase,
     CalendarDays,
@@ -95,6 +96,11 @@ const navGroups: NavGroup[] = [
                 title: 'Learning',
                 href: '/learning',
                 icon: GraduationCap,
+            },
+            {
+                title: 'Statistics',
+                href: '/statistics',
+                icon: BarChart3,
             },
         ],
     },

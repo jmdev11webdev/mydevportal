@@ -12,6 +12,7 @@ use App\Http\Controllers\PipelineLeadController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ReadmeController;
 use App\Http\Controllers\StackItemController;
+use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
 
@@ -62,6 +63,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('pipeline', PipelineLeadController::class)
         ->except(['show', 'create', 'edit'])
         ->parameters(['pipeline' => 'pipelineLead']);
+
+    Route::get('statistics', StatisticsController::class)->name('statistics.index');
 
     Route::resource('stack', StackItemController::class)
         ->except(['show', 'create', 'edit'])

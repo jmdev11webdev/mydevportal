@@ -28,6 +28,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {
     stackCategories,
     stackCategoryClasses,
     stackCategoryLabel,
@@ -122,7 +129,7 @@ function destroyItem(item: StackItem): void {
 <template>
     <Head title="Stack" />
 
-    <div class="flex flex-1 flex-col gap-6 p-4 md:p-6">
+    <div class="flex flex-1 flex-col gap-6 p-4 pb-24 md:p-6 md:pb-6">
         <PageHeader
             eyebrow="Tech Radar"
             title="Stack"
@@ -130,7 +137,11 @@ function destroyItem(item: StackItem): void {
             :icon="Layers"
         >
             <template #actions>
-                <Button size="sm" @click="openCreate">
+                <Button
+                    size="sm"
+                    class="hidden sm:inline-flex"
+                    @click="openCreate"
+                >
                     <Plus class="size-4" />
                     Add tool
                 </Button>
@@ -162,7 +173,7 @@ function destroyItem(item: StackItem): void {
             <div
                 class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
             >
-                <div class="flex flex-wrap items-center gap-1.5">
+                <div class="hidden flex-wrap items-center gap-1.5 sm:flex">
                     <button
                         type="button"
                         class="rounded-lg border px-2.5 py-1 text-xs font-medium transition-colors"
@@ -191,20 +202,64 @@ function destroyItem(item: StackItem): void {
                     </button>
                 </div>
 
-                <div class="relative w-full sm:w-56">
-                    <Search
-                        class="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground"
-                    />
-                    <Input
-                        v-model="search"
-                        type="search"
-                        placeholder="Search stack..."
-                        class="h-8 pl-8 text-xs"
-                    />
+                <div class="flex items-center gap-2 sm:w-56">
+                    <div class="relative min-w-0 flex-1">
+                        <Search
+                            class="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground"
+                        />
+                        <Input
+                            v-model="search"
+                            type="search"
+                            placeholder="Search stack..."
+                            class="h-8 pl-8 text-xs"
+                        />
+                    </div>
+                    <Select v-model="categoryFilter">
+                        <SelectTrigger
+                            class="h-8 w-36 shrink-0 text-xs sm:hidden"
+                            aria-label="Filter stack by category"
+                        >
+                            <SelectValue placeholder="All categories" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All categories</SelectItem>
+                            <SelectItem
+                                v-for="cat in stackCategories"
+                                :key="cat"
+                                :value="cat"
+                            >
+                                {{ stackCategoryLabel[cat] }}
+                            </SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
             </div>
 
-            <div class="flex flex-wrap items-center gap-1.5 border-t pt-2.5">
+            <div class="flex items-center justify-between gap-2 border-t pt-2.5 sm:hidden">
+                <span class="text-[11px] font-medium text-muted-foreground">
+                    Status
+                </span>
+                <Select v-model="statusFilter">
+                    <SelectTrigger
+                        class="h-8 w-40 text-xs"
+                        aria-label="Filter stack by status"
+                    >
+                        <SelectValue placeholder="All statuses" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">All statuses</SelectItem>
+                        <SelectItem
+                            v-for="status in stackStatuses"
+                            :key="status"
+                            :value="status"
+                        >
+                            {{ stackStatusLabel[status] }}
+                        </SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+
+            <div class="hidden flex-wrap items-center gap-1.5 border-t pt-2.5 sm:flex">
                 <span
                     class="mr-1 text-[11px] font-medium text-muted-foreground"
                 >
@@ -379,5 +434,16 @@ function destroyItem(item: StackItem): void {
                 categoryFilter === 'all' ? 'backend' : categoryFilter
             "
         />
+
+        <div class="fixed right-5 bottom-5 z-40 sm:hidden">
+            <Button
+                size="icon"
+                class="size-14 rounded-full shadow-lg"
+                aria-label="Add tool"
+                @click="openCreate"
+            >
+                <Plus class="size-6" />
+            </Button>
+        </div>
     </div>
 </template>

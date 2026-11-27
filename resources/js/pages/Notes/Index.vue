@@ -88,7 +88,7 @@ function removeNote(note: Note): void {
 <template>
     <Head title="Notes" />
 
-    <div class="flex flex-1 flex-col gap-6 p-4 md:p-6">
+    <div class="flex flex-1 flex-col gap-6 p-4 pb-24 md:p-6 md:pb-6">
         <PageHeader
             eyebrow="Private workspace"
             title="Notes"
@@ -103,7 +103,7 @@ function removeNote(note: Note): void {
                     <Lock class="size-3" />
                     Private by default
                 </Badge>
-                <Button @click="createNote">
+                <Button class="hidden sm:inline-flex" @click="createNote">
                     <Plus class="size-4" />
                     New note
                 </Button>
@@ -242,4 +242,15 @@ function removeNote(note: Note): void {
     </div>
 
     <NoteDialog v-model:open="dialogOpen" :note="editing" />
+
+    <div class="fixed right-5 bottom-5 z-40 sm:hidden">
+        <Button
+            size="icon"
+            class="size-14 rounded-full shadow-lg"
+            aria-label="New note"
+            @click="createNote"
+        >
+            <Plus class="size-6" />
+        </Button>
+    </div>
 </template>

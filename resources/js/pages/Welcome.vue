@@ -26,65 +26,7 @@ import AppLogoIcon from '@/components/AppLogoIcon.vue';
 
 const page = usePage();
 const isAuthenticated = computed(() => Boolean(page.props.auth?.user));
-const billingCycle = ref<'monthly' | 'yearly'>('yearly');
 const mobileNavOpen = ref(false);
-
-const pricingPlans = [
-    {
-        id: 'free',
-        name: 'Starter',
-        badge: 'Self-host or Cloud Free',
-        description:
-            'Your complete private developer cockpit for daily building, learning, and shipping.',
-        monthlyPrice: 0,
-        yearlyPrice: 0,
-        featured: false,
-        cta: 'Create free workspace',
-        features: [
-            'Projects, Focus Board (Tasks & Subtasks), and Calendar',
-            'Private Notes, Career Timeline, and 20-20-20 Eye Care',
-            'Devicon Tech Stack selector & README generator',
-            'Pipeline sheet (up to 25 leads) & Stack radar',
-            'Passkeys, 2FA, GitHub OAuth & offline-ready PWA',
-        ],
-    },
-    {
-        id: 'pro',
-        name: 'Pro',
-        badge: 'Most popular',
-        description:
-            'Zero-maintenance cloud sync, live GitHub automation, and your public developer presence.',
-        monthlyPrice: 7,
-        yearlyPrice: 5,
-        featured: true,
-        cta: 'Start Pro plan',
-        features: [
-            'Everything in Starter, unlimited Pipeline & Stack items',
-            'Public Devfolio profile (mydevportal.app/@you) + custom domain',
-            'Automatic GitHub repo, PR & tech stack sync',
-            'AI README drafts & weekly progress standup digests',
-            'Automated encrypted cloud backups & multi-device sync',
-        ],
-    },
-    {
-        id: 'studio',
-        name: 'Studio',
-        badge: 'Freelance & Indie OS',
-        description:
-            'Turn won Pipeline deals into client-facing project portals and ship-ready updates.',
-        monthlyPrice: 19,
-        yearlyPrice: 15,
-        featured: false,
-        cta: 'Start Studio plan',
-        features: [
-            'Everything in Pro with higher AI & sync limits',
-            'Shareable, passwordless Client Project Portals',
-            'One-click client milestone updates & invoice summaries',
-            'Up to 3 custom domains for Devfolio & client hubs',
-            'Priority support & early access to new modules',
-        ],
-    },
-];
 
 const features = [
     {
@@ -182,18 +124,9 @@ const privacyPoints = [
                         >Privacy</a
                     >
                     <a href="#pwa" class="transition hover:text-white">PWA</a>
-                    <a href="#pricing" class="transition hover:text-white"
-                        >Pricing</a
-                    >
                 </nav>
 
                 <div class="flex items-center gap-2">
-                    <a
-                        href="#pricing"
-                        class="rounded-lg px-2.5 py-2 text-sm text-slate-300 transition hover:bg-white/5 hover:text-white md:hidden"
-                    >
-                        Pricing
-                    </a>
                     <template v-if="isAuthenticated">
                         <Link
                             href="/dashboard"
@@ -254,13 +187,6 @@ const privacyPoints = [
                         @click="mobileNavOpen = false"
                     >
                         PWA
-                    </a>
-                    <a
-                        href="#pricing"
-                        class="rounded-lg px-3 py-2 text-sm text-slate-300 transition hover:bg-white/5 hover:text-white"
-                        @click="mobileNavOpen = false"
-                    >
-                        Pricing
                     </a>
                     <Link
                         v-if="!isAuthenticated"
@@ -340,7 +266,7 @@ const privacyPoints = [
                             href="/register"
                             class="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-medium text-white transition hover:bg-white/10"
                         >
-                            Create a free workspace
+                            Create your workspace
                         </Link>
                     </div>
 
@@ -726,193 +652,6 @@ const privacyPoints = [
             </div>
         </section>
 
-        <section id="pricing" class="scroll-mt-16 border-t border-white/5">
-            <div class="mx-auto w-full max-w-6xl px-5 py-20">
-                <div
-                    class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between"
-                >
-                    <div class="max-w-2xl">
-                        <p
-                            class="text-[11px] font-semibold tracking-[0.18em] text-indigo-300 uppercase"
-                        >
-                            Pricing &amp; plans
-                        </p>
-                        <h2
-                            class="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl"
-                        >
-                            Start free. Upgrade when you want cloud leverage.
-                        </h2>
-                        <p class="mt-3 text-sm leading-relaxed text-slate-400">
-                            Keep your personal workspace free forever or
-                            self-host it — pay only for managed hosting, public
-                            Devfolio pages, GitHub sync, and client portals.
-                        </p>
-                    </div>
-
-                    <div
-                        class="inline-flex w-fit items-center gap-1 rounded-xl border border-white/10 bg-white/[0.03] p-1"
-                        role="group"
-                        aria-label="Billing cycle"
-                    >
-                        <button
-                            type="button"
-                            class="rounded-lg px-3 py-1.5 text-xs font-medium transition"
-                            :class="
-                                billingCycle === 'monthly'
-                                    ? 'bg-white text-slate-900 shadow-sm'
-                                    : 'text-slate-400 hover:text-white'
-                            "
-                            @click="billingCycle = 'monthly'"
-                        >
-                            Monthly
-                        </button>
-                        <button
-                            type="button"
-                            class="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition"
-                            :class="
-                                billingCycle === 'yearly'
-                                    ? 'bg-white text-slate-900 shadow-sm'
-                                    : 'text-slate-400 hover:text-white'
-                            "
-                            @click="billingCycle = 'yearly'"
-                        >
-                            <span>Yearly</span>
-                            <span
-                                class="rounded-full px-1.5 py-0.5 text-[10px] font-semibold"
-                                :class="
-                                    billingCycle === 'yearly'
-                                        ? 'bg-emerald-500/15 text-emerald-700'
-                                        : 'bg-emerald-500/15 text-emerald-300'
-                                "
-                            >
-                                Save 25%
-                            </span>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="mt-10 grid gap-6 lg:grid-cols-3">
-                    <article
-                        v-for="plan in pricingPlans"
-                        :key="plan.id"
-                        class="relative flex flex-col justify-between rounded-2xl border p-6 transition"
-                        :class="
-                            plan.featured
-                                ? 'border-indigo-400/40 bg-gradient-to-b from-indigo-950/60 via-slate-900/80 to-slate-950/90 shadow-xl shadow-indigo-950/30'
-                                : 'border-white/10 bg-white/[0.03] hover:border-white/20'
-                        "
-                    >
-                        <div>
-                            <div
-                                class="flex items-center justify-between gap-2"
-                            >
-                                <h3
-                                    class="text-lg font-semibold tracking-tight"
-                                >
-                                    {{ plan.name }}
-                                </h3>
-                                <span
-                                    class="rounded-full border px-2.5 py-0.5 text-[11px] font-medium"
-                                    :class="
-                                        plan.featured
-                                            ? 'border-indigo-400/30 bg-indigo-500/15 text-indigo-200'
-                                            : 'border-white/10 bg-white/5 text-slate-300'
-                                    "
-                                >
-                                    {{ plan.badge }}
-                                </span>
-                            </div>
-
-                            <p
-                                class="mt-2 min-h-10 text-xs leading-relaxed text-slate-400"
-                            >
-                                {{ plan.description }}
-                            </p>
-
-                            <div class="mt-6 flex items-baseline gap-1.5">
-                                <span
-                                    class="text-4xl font-semibold tracking-tight tabular-nums"
-                                >
-                                    ${{
-                                        billingCycle === 'yearly'
-                                            ? plan.yearlyPrice
-                                            : plan.monthlyPrice
-                                    }}
-                                </span>
-                                <span class="text-xs text-slate-400">
-                                    {{
-                                        plan.monthlyPrice === 0
-                                            ? 'forever'
-                                            : '/ month'
-                                    }}
-                                </span>
-                            </div>
-                            <p class="mt-1 min-h-4 text-[11px] text-slate-500">
-                                {{
-                                    plan.monthlyPrice === 0
-                                        ? 'No credit card required'
-                                        : billingCycle === 'yearly'
-                                          ? `Billed $${plan.yearlyPrice * 12}/year`
-                                          : 'Billed monthly · cancel anytime'
-                                }}
-                            </p>
-
-                            <ul
-                                class="mt-6 space-y-2.5 border-t border-white/10 pt-6"
-                            >
-                                <li
-                                    v-for="item in plan.features"
-                                    :key="item"
-                                    class="flex items-start gap-2.5 text-xs leading-relaxed text-slate-300"
-                                >
-                                    <span
-                                        class="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full"
-                                        :class="
-                                            plan.featured
-                                                ? 'bg-indigo-500/20 text-indigo-300'
-                                                : 'bg-emerald-500/15 text-emerald-300'
-                                        "
-                                    >
-                                        <Check class="size-2.5" />
-                                    </span>
-                                    <span>{{ item }}</span>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div class="mt-8">
-                            <Link
-                                :href="
-                                    isAuthenticated
-                                        ? '/dashboard'
-                                        : `/register?plan=${plan.id}`
-                                "
-                                class="inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition"
-                                :class="
-                                    plan.featured
-                                        ? 'bg-white text-slate-900 hover:bg-slate-200'
-                                        : 'border border-white/15 bg-white/5 text-white hover:bg-white/10'
-                                "
-                            >
-                                {{
-                                    isAuthenticated
-                                        ? 'Open dashboard'
-                                        : plan.cta
-                                }}
-                                <ArrowRight class="size-4" />
-                            </Link>
-                        </div>
-                    </article>
-                </div>
-
-                <p class="mt-6 text-center text-xs text-slate-500">
-                    Cloud Pro &amp; Studio integrations are rolling out in
-                    phases — create a free workspace today to lock in early
-                    supporter pricing.
-                </p>
-            </div>
-        </section>
-
         <section class="border-t border-white/5">
             <div
                 class="mx-auto flex w-full max-w-6xl flex-col items-start justify-between gap-6 px-5 py-16 sm:flex-row sm:items-center"
@@ -941,7 +680,7 @@ const privacyPoints = [
                         {{
                             isAuthenticated
                                 ? 'Open dashboard'
-                                : 'Create free workspace'
+                                : 'Create your workspace'
                         }}
                         <ArrowRight class="size-4" />
                     </Link>
@@ -967,9 +706,6 @@ const privacyPoints = [
                     >
                     <a href="#privacy" class="transition hover:text-slate-300"
                         >Privacy</a
-                    >
-                    <a href="#pricing" class="transition hover:text-slate-300"
-                        >Pricing</a
                     >
                     <a
                         href="https://www.github.com/jmdev11webdev/mydevportal"

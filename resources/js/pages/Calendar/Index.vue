@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
+import { createReusableTemplate, useMediaQuery } from '@vueuse/core';
 import {
     ArrowUpRight,
     Calendar as CalendarIcon,
     CalendarDays,
+    CalendarPlus,
     CheckCircle2,
     ChevronLeft,
     ChevronRight,
@@ -34,6 +36,13 @@ import EventDialog from '@/components/portal/EventDialog.vue';
 import TaskDialog from '@/components/portal/TaskDialog.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import {
     Select,
@@ -98,7 +107,18 @@ const {
 
 const todayStr = todayInput();
 const selectedDate = ref<string>(todayStr);
+const isCompactViewport = useMediaQuery('(max-width: 1279px)');
+const dayDialogOpen = ref(false);
+const [DefineDayWorkspace, ReuseDayWorkspace] = createReusableTemplate();
 const viewMode = ref<'month' | 'agenda'>('month');
+
+function selectDay(dateStr: string): void {
+    selectedDate.value = dateStr;
+
+    if (isCompactViewport.value) {
+        dayDialogOpen.value = true;
+    }
+}
 const projectFilter = ref<string>('all');
 
 const showEvents = ref(true);
@@ -481,7 +501,7 @@ function startItemFocusTimer(label: string, minutes = 45): void {
 <template>
     <Head title="Calendar" />
 
-    <div class="flex flex-1 flex-col gap-6 p-4 md:p-6">
+    <div class="flex flex-1 flex-col gap-6 p-4 pb-24 md:p-6 md:pb-6">
         <PageHeader
             eyebrow="Schedule & Execution"
             title="Interactive Calendar"
@@ -491,13 +511,17 @@ function startItemFocusTimer(label: string, minutes = 45): void {
             <template #actions>
                 <Button
                     variant="outline"
+                    class="hidden sm:inline-flex"
                     @click="openCreateTask({ dateStr: selectedDate })"
                 >
                     <ListChecks class="size-4" />
                     New task
                 </Button>
-                <Button @click="openCreateEvent(selectedDate)">
-                    <Plus class="size-4" />
+                <Button
+                    class="hidden sm:inline-flex"
+                    @click="openCreateEvent(selectedDate)"
+                >
+                    <CalendarPlus class="size-4" />
                     Schedule event
                 </Button>
             </template>
@@ -788,16 +812,16 @@ function startItemFocusTimer(label: string, minutes = 45): void {
             <!-- Left: Month Grid OR Agenda Timeline -->
             <section
                 v-if="viewMode === 'month'"
-                class="overflow-x-auto rounded-2xl border bg-card shadow-sm"
+                class="overflow-hidden rounded-2xl border bg-card shadow-sm"
             >
-                <div class="min-w-[600px]">
+                <div>
                     <div
-                        class="grid grid-cols-7 border-b bg-muted/30 text-center text-[11px] font-semibold tracking-wider text-muted-foreground uppercase"
+                        class="grid grid-cols-7 border-b bg-muted/30 text-center text-[10px] font-semibold tracking-wider text-muted-foreground uppercase sm:text-[11px]"
                     >
                         <div
                             v-for="day in weekdayHeaders"
                             :key="day"
-                            class="py-2.5"
+                            class="py-2 sm:py-2.5"
                         >
                             {{ day }}
                         </div>
@@ -810,7 +834,7 @@ function startItemFocusTimer(label: string, minutes = 45): void {
                             role="button"
                             tabindex="0"
                             :class="[
-                                'group relative flex min-h-22 cursor-pointer flex-col justify-between p-1.5 text-left transition sm:min-h-28 sm:p-2',
+                                'group relative flex min-h-14 min-w-0 cursor-pointer flex-col justify-between overflow-hidden p-1 text-left transition sm:min-h-28 sm:p-2',
                                 cell.inCurrentMonth
                                     ? 'bg-card hover:bg-muted/25'
                                     : 'bg-muted/15 text-muted-foreground/60 hover:bg-muted/30',
@@ -818,13 +842,13 @@ function startItemFocusTimer(label: string, minutes = 45): void {
                                     ? 'ring-2 ring-indigo-500 ring-inset'
                                     : '',
                             ]"
-                            @click="selectedDate = cell.dateStr"
-                            @keydown.enter.prevent="selectedDate = cell.dateStr"
+                            @click="selectDay(cell.dateStr)"
+                            @keydown.enter.prevent="selectDay(cell.dateStr)"
                         >
                             <div class="flex items-center justify-between">
                                 <span
                                     :class="[
-                                        'inline-flex size-6 items-center justify-center rounded-full text-xs font-semibold',
+                                        'inline-flex size-5 items-center justify-center rounded-full text-[11px] font-semibold sm:size-6 sm:text-xs',
                                         cell.isToday
                                             ? 'bg-indigo-600 text-white'
                                             : selectedDate === cell.dateStr
@@ -837,7 +861,7 @@ function startItemFocusTimer(label: string, minutes = 45): void {
 
                                 <button
                                     type="button"
-                                    class="inline-flex size-5 items-center justify-center rounded text-muted-foreground transition hover:bg-muted hover:text-foreground sm:hidden sm:group-hover:inline-flex"
+                                    class="hidden size-5 items-center justify-center rounded text-muted-foreground transition hover:bg-muted hover:text-foreground sm:group-hover:inline-flex"
                                     :aria-label="`Schedule on ${cell.dateStr}`"
                                     @click.stop="openCreateEvent(cell.dateStr)"
                                 >
@@ -845,7 +869,53 @@ function startItemFocusTimer(label: string, minutes = 45): void {
                                 </button>
                             </div>
 
-                            <div class="mt-1.5 flex flex-col gap-1">
+                            <!-- Compact dot indicators on mobile (< sm) so 7 columns fit without horizontal overflow -->
+                            <div
+                                v-if="
+                                    cell.events.length ||
+                                    cell.tasks.length ||
+                                    cell.projectMilestones.length ||
+                                    cell.careerMilestones.length
+                                "
+                                class="mt-1 flex flex-wrap items-center gap-1 sm:hidden"
+                            >
+                                <span
+                                    v-for="ev in cell.events.slice(0, 2)"
+                                    :key="`m-ev-${ev.id}`"
+                                    :class="[
+                                        'size-1.5 rounded-full',
+                                        projectColorClasses[ev.color].dot,
+                                    ]"
+                                />
+                                <span
+                                    v-for="task in cell.tasks.slice(0, 2)"
+                                    :key="`m-task-${task.id}`"
+                                    :class="[
+                                        'size-1.5 rounded-full',
+                                        task.status === 'done'
+                                            ? 'bg-emerald-500'
+                                            : 'bg-foreground/60',
+                                    ]"
+                                />
+                                <span
+                                    v-for="pm in cell.projectMilestones.slice(
+                                        0,
+                                        1,
+                                    )"
+                                    :key="`m-${pm.id}`"
+                                    class="size-1.5 rounded-full bg-amber-500"
+                                />
+                                <span
+                                    v-for="cm in cell.careerMilestones.slice(
+                                        0,
+                                        1,
+                                    )"
+                                    :key="`m-career-${cm.id}`"
+                                    class="size-1.5 rounded-full bg-rose-500"
+                                />
+                            </div>
+
+                            <div class="mt-1.5 hidden flex-col gap-1 sm:flex">
                                 <!-- Events on this day -->
                                 <div
                                     v-for="ev in cell.events.slice(0, 2)"
@@ -969,7 +1039,7 @@ function startItemFocusTimer(label: string, minutes = 45): void {
                             <button
                                 type="button"
                                 class="flex items-center gap-2 text-left text-sm font-semibold hover:text-indigo-500"
-                                @click="selectedDate = day.dateStr"
+                                @click="selectDay(day.dateStr)"
                             >
                                 <span>{{ formatDate(day.dateStr) }}</span>
                                 <Badge
@@ -984,7 +1054,7 @@ function startItemFocusTimer(label: string, minutes = 45): void {
                                 variant="ghost"
                                 size="sm"
                                 class="h-7 text-xs"
-                                @click="selectedDate = day.dateStr"
+                                @click="selectDay(day.dateStr)"
                             >
                                 Inspect day
                             </Button>
@@ -1067,10 +1137,9 @@ function startItemFocusTimer(label: string, minutes = 45): void {
                 </p>
             </section>
 
-            <!-- Right: Selected Day Inspector & Event/Task/Subtask Workspace -->
-            <aside class="flex flex-col gap-4">
-                <section class="rounded-2xl border bg-card p-5 shadow-sm">
-                    <div class="flex items-start justify-between gap-2">
+            <!-- Reusable Selected Day Workspace -->
+            <DefineDayWorkspace>
+                <div class="flex items-start justify-between gap-2 pr-8 xl:pr-0">
                         <div>
                             <p
                                 class="text-[11px] font-semibold tracking-[0.14em] text-indigo-500 uppercase"
@@ -1719,10 +1788,31 @@ function startItemFocusTimer(label: string, minutes = 45): void {
                             </Link>
                         </div>
                     </div>
+            </DefineDayWorkspace>
+
+            <!-- Right (Desktop): Selected Day Inspector & Event/Task/Subtask Workspace -->
+            <aside class="hidden flex-col gap-4 xl:flex">
+                <section class="rounded-2xl border bg-card p-5 shadow-sm">
+                    <ReuseDayWorkspace />
                 </section>
             </aside>
         </div>
     </div>
+
+    <!-- Mobile / Portrait Selected Day Modal -->
+    <Dialog v-model:open="dayDialogOpen">
+        <DialogContent class="max-h-[88vh] overflow-y-auto sm:max-w-xl">
+            <DialogHeader class="sr-only">
+                <DialogTitle>
+                    {{ formatDate(selectedDate) }}
+                </DialogTitle>
+                <DialogDescription>
+                    Events, tasks, and milestones for the selected day.
+                </DialogDescription>
+            </DialogHeader>
+            <ReuseDayWorkspace />
+        </DialogContent>
+    </Dialog>
 
     <EventDialog
         v-model:open="eventDialogOpen"
@@ -1740,4 +1830,24 @@ function startItemFocusTimer(label: string, minutes = 45): void {
         :default-due-date="defaultTaskDueDate"
         :default-event-id="defaultTaskEventId"
     />
+
+    <div class="fixed right-5 bottom-5 z-40 flex flex-col items-end gap-3 sm:hidden">
+        <Button
+            variant="outline"
+            size="icon"
+            class="size-12 rounded-full bg-background/95 shadow-md backdrop-blur"
+            aria-label="New task"
+            @click="openCreateTask({ dateStr: selectedDate })"
+        >
+            <ListChecks class="size-5" />
+        </Button>
+        <Button
+            size="icon"
+            class="size-14 rounded-full shadow-lg"
+            aria-label="Schedule event"
+            @click="openCreateEvent(selectedDate)"
+        >
+            <CalendarPlus class="size-6" />
+        </Button>
+    </div>
 </template>
