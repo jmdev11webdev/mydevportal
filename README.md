@@ -1,8 +1,39 @@
-<img width="1536" height="1024" align="center" alt="image" src="https://github.com/user-attachments/assets/5ae615d7-4497-4c1f-a630-6adfebac1aec" /><br>
+<div align="center">
 
-A privacy-first developer productivity PWA for learning, building, focusing, and quietly managing your career — built with **Laravel 13**, **Inertia v3**, **Vue 3**, **TypeScript**, and **Tailwind CSS 4**.
+<h1>MyDevPortal</h1>
 
-MyDevPortal keeps the whole developer loop in one calm workspace: projects, tasks, learning resources, private notes, a career timeline, and a README generator. No analytics, no ad trackers, no growth dashboards — just your work.
+<img src="public/favicon.svg" alt="MyDevPortal Logo" width="96" height="96" />
+
+<p>
+  <strong><em>A Private Developer Workspace &amp; Command Center for Laravel Artisans</em></strong>
+</p>
+
+<p>
+  Build, learn, focus, and track your career in one calm workspace—with local SQLite storage, PWA support, and NativePHP targets.
+</p>
+
+<p>
+  <img src="https://img.shields.io/badge/PHP-8.5%2B-777BB4?style=for-the-badge&logo=php&logoColor=white&labelColor=334155" alt="PHP 8.5+" />
+  <img src="https://img.shields.io/badge/LARAVEL-13-FF2D20?style=for-the-badge&logo=laravel&logoColor=white&labelColor=334155" alt="Laravel 13" />
+  <img src="https://img.shields.io/badge/VUE-3-4FC08D?style=for-the-badge&logo=vuedotjs&logoColor=white&labelColor=334155" alt="Vue 3" />
+  <img src="https://img.shields.io/badge/INERTIA-V3-9553E9?style=for-the-badge&logo=inertia&logoColor=white&labelColor=334155" alt="Inertia v3" />
+  <img src="https://img.shields.io/badge/TAILWIND%20CSS-V4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white&labelColor=334155" alt="Tailwind CSS v4" />
+</p>
+<p>
+  <img src="https://img.shields.io/badge/SQLITE-LOCAL-003B57?style=for-the-badge&logo=sqlite&logoColor=white&labelColor=334155" alt="SQLite Local" />
+  <img src="https://img.shields.io/badge/NATIVEPHP-DESKTOP%20%26%20MOBILE-0EA5E9?style=for-the-badge&logo=electron&logoColor=white&labelColor=334155" alt="NativePHP Desktop & Mobile" />
+</p>
+
+<p>
+  <a href="#why-mydevportal">Why MyDevPortal</a> •
+  <a href="#screenshot-tour">Screenshot Tour</a> •
+  <a href="#feature-summary">Feature Summary</a> •
+  <a href="#-mydevportal-dashboarddocsscreenshotsdashboard-overviewpng">Preview</a>
+</p>
+
+</div>
+
+---
 
 ![MyDevPortal dashboard](docs/screenshots/dashboard-overview.png)
 
