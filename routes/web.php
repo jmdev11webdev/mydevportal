@@ -25,7 +25,7 @@ Route::middleware(['guest', 'throttle:10,1'])->group(function () {
     Route::get('auth/github/callback', [GitHubAuthController::class, 'callback'])->name('auth.github.callback');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
 
     Route::get('readme', ReadmeController::class)->name('readme.index');
