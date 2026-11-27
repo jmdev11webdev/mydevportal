@@ -7,6 +7,7 @@ import {
     Briefcase,
     CalendarDays,
     CheckCircle2,
+    Download,
     Flame,
     FolderKanban,
     GraduationCap,
@@ -93,6 +94,13 @@ type StatisticsPayload = {
         done_this_week: number;
         done_this_month: number;
         weekly_trend: { label: string; date: string; count: number }[];
+    };
+    downloads: {
+        total: number;
+        exe: number;
+        apk: number;
+        releases: number;
+        latest_tag: string | null;
     };
 };
 
@@ -533,5 +541,58 @@ function formatCurrency(value: number): string {
                 </dl>
             </section>
         </div>
+
+        <!-- Release Downloads (GitHub) -->
+        <section class="rounded-2xl border bg-card p-5 shadow-sm">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                    <Download class="size-4 text-emerald-500" />
+                    <h2 class="text-sm font-semibold">App Release Downloads</h2>
+                    <Badge
+                        v-if="statistics.downloads.latest_tag"
+                        variant="outline"
+                        class="text-[11px]"
+                    >
+                        {{ statistics.downloads.latest_tag }}
+                    </Badge>
+                </div>
+                <a
+                    href="https://github.com/jmdev11webdev/mydevportal/releases"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground transition hover:text-foreground"
+                >
+                    View releases
+                    <ArrowUpRight class="size-3.5" />
+                </a>
+            </div>
+
+            <div class="mt-4 grid gap-3 sm:grid-cols-3">
+                <div class="rounded-xl border bg-muted/20 p-3">
+                    <p class="text-[11px] text-muted-foreground">
+                        Total downloads
+                    </p>
+                    <p class="mt-1 text-xl font-semibold tabular-nums">
+                        {{ statistics.downloads.total.toLocaleString() }}
+                    </p>
+                </div>
+                <div class="rounded-xl border bg-muted/20 p-3">
+                    <p class="text-[11px] text-muted-foreground">
+                        Desktop (.exe)
+                    </p>
+                    <p class="mt-1 text-xl font-semibold tabular-nums">
+                        {{ statistics.downloads.exe.toLocaleString() }}
+                    </p>
+                </div>
+                <div class="rounded-xl border bg-muted/20 p-3">
+                    <p class="text-[11px] text-muted-foreground">
+                        Mobile (.apk)
+                    </p>
+                    <p class="mt-1 text-xl font-semibold tabular-nums">
+                        {{ statistics.downloads.apk.toLocaleString() }}
+                    </p>
+                </div>
+            </div>
+        </section>
     </div>
 </template>

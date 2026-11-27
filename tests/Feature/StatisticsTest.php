@@ -4,12 +4,26 @@ use App\Models\PipelineLead;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 
 test('guests are redirected from statistics page', function () {
     $this->get('/statistics')->assertRedirect('/login');
 });
 
 test('authenticated user can view overall statistics and dashboard overall card', function () {
+    Cache::forget('github_release_downloads');
+    Http::fake([
+        'api.github.com/repos/jmdev11webdev/mydevportal/releases' => Http::response([
+            [
+                'tag_name' => 'v1.0.0',
+                'assets' => [
+                    ['name' => 'mydevportal-setup.exe', 'download_count' => 12],
+                    ['name' => 'mydevportal.apk', 'download_count' => 8],
+                ],
+            ],
+        ]),
+    ]);
     $user = User::factory()->create();
 
     $project = Project::create([
@@ -44,6 +58,10 @@ test('authenticated user can view overall statistics and dashboard overall card'
             ->where('statistics.projects.completed', 1)
             ->where('statistics.tasks.done', 1)
             ->where('statistics.pipeline.won_value', 2500)
+            ->where('statistics.downloads.total', 20)
+            ->where('statistics.downloads.exe', 12)
+            ->where('statistics.downloads.apk', 8)
+            ->where('statistics.downloads.latest_tag', 'v1.0.0')
         );
 
     $this->actingAs($user)
