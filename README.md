@@ -22,6 +22,9 @@
 <p>
   <img src="https://img.shields.io/badge/SQLITE-LOCAL-003B57?style=for-the-badge&logo=sqlite&logoColor=white&labelColor=334155" alt="SQLite Local" />
   <img src="https://img.shields.io/badge/NATIVEPHP-DESKTOP%20%26%20MOBILE-0EA5E9?style=for-the-badge&logo=electron&logoColor=white&labelColor=334155" alt="NativePHP Desktop & Mobile" />
+  <a href="https://github.com/jmdev11webdev/mydevportal/releases">
+    <img src="https://img.shields.io/github/downloads/jmdev11webdev/mydevportal/total?style=for-the-badge&logo=github&logoColor=white&labelColor=334155&color=10B981" alt="GitHub Downloads" />
+  </a>
 </p>
 
 <p>

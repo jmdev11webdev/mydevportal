@@ -11,6 +11,9 @@ use App\Models\Project;
 use App\Models\StackItem;
 use App\Models\Task;
 use App\Models\User;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
+use Throwable;
 
 class PortalStatistics
 {
@@ -178,6 +181,79 @@ class PortalStatistics
                 )->count(),
                 'weekly_trend' => $weeklyTrend,
             ],
+            'downloads' => self::releaseDownloads(),
         ];
+    }
+
+    /**
+     * Fetch cached download counts for .exe and .apk assets from GitHub Releases.
+     *
+     * @return array{total: int, exe: int, apk: int, releases: int, latest_tag: string|null}
+     */
+    public static function releaseDownloads(): array
+    {
+        return Cache::remember('github_release_downloads', now()->addMinutes(30), function (): array {
+            $empty = [
+                'total' => 0,
+                'exe' => 0,
+                'apk' => 0,
+                'releases' => 0,
+                'latest_tag' => null,
+            ];
+
+            try {
+                $response = Http::timeout(3)
+                    ->acceptJson()
+                    ->get('https://api.github.com/repos/jmdev11webdev/mydevportal/releases');
+
+                if (! $response->successful()) {
+                    return $empty;
+                }
+
+                $releases = $response->json();
+                if (! is_array($releases)) {
+                    return $empty;
+                }
+
+                $total = 0;
+                $exe = 0;
+                $apk = 0;
+
+                foreach ($releases as $release) {
+                    if (! is_array($release) || ! is_array($release['assets'] ?? null)) {
+                        continue;
+                    }
+
+                    foreach ($release['assets'] as $asset) {
+                        if (! is_array($asset)) {
+                            continue;
+                        }
+
+                        $count = (int) ($asset['download_count'] ?? 0);
+                        $name = strtolower((string) ($asset['name'] ?? ''));
+
+                        $total += $count;
+
+                        if (str_ends_with($name, '.exe')) {
+                            $exe += $count;
+                        } elseif (str_ends_with($name, '.apk')) {
+                            $apk += $count;
+                        }
+                    }
+                }
+
+                $firstRelease = $releases[0] ?? null;
+
+                return [
+                    'total' => $total,
+                    'exe' => $exe,
+                    'apk' => $apk,
+                    'releases' => count($releases),
+                    'latest_tag' => is_array($firstRelease) ? ($firstRelease['tag_name'] ?? null) : null,
+                ];
+            } catch (Throwable) {
+                return $empty;
+            }
+        });
     }
 }
