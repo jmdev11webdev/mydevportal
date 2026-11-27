@@ -54,7 +54,9 @@ const segments = computed(() => {
 });
 
 const activeSegment = computed(() =>
-    hoveredIndex.value !== null ? (segments.value[hoveredIndex.value] ?? null) : null,
+    hoveredIndex.value !== null
+        ? (segments.value[hoveredIndex.value] ?? null)
+        : null,
 );
 </script>
 
@@ -123,9 +125,7 @@ const activeSegment = computed(() =>
                 :key="slice.label"
                 class="flex cursor-pointer items-center justify-between gap-2 rounded-md px-1.5 py-0.5 transition-colors"
                 :class="
-                    hoveredIndex === index
-                        ? 'bg-muted/60'
-                        : 'hover:bg-muted/40'
+                    hoveredIndex === index ? 'bg-muted/60' : 'hover:bg-muted/40'
                 "
                 @mouseenter="hoveredIndex = index"
                 @mouseleave="hoveredIndex = null"
@@ -139,7 +139,9 @@ const activeSegment = computed(() =>
                         {{ slice.label }}
                     </span>
                 </span>
-                <span class="shrink-0 font-mono text-[11px] font-medium tabular-nums">
+                <span
+                    class="shrink-0 font-mono text-[11px] font-medium tabular-nums"
+                >
                     {{ slice.value }}
                 </span>
             </li>

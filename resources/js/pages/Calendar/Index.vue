@@ -1139,655 +1139,620 @@ function startItemFocusTimer(label: string, minutes = 45): void {
 
             <!-- Reusable Selected Day Workspace -->
             <DefineDayWorkspace>
-                <div class="flex items-start justify-between gap-2 pr-8 xl:pr-0">
-                        <div>
-                            <p
-                                class="text-[11px] font-semibold tracking-[0.14em] text-indigo-500 uppercase"
-                            >
-                                Selected Day Workspace
-                            </p>
-                            <h3 class="mt-1 text-lg font-semibold">
-                                {{ formatDate(selectedDate) }}
-                            </h3>
-                        </div>
-
-                        <div class="flex items-center gap-1.5">
-                            <Button
-                                size="sm"
-                                variant="outline"
-                                class="h-8 text-xs"
-                                @click="
-                                    openCreateTask({ dateStr: selectedDate })
-                                "
-                            >
-                                <Plus class="size-3.5" />
-                                Task
-                            </Button>
-                            <Button
-                                size="sm"
-                                class="h-8 text-xs"
-                                @click="openCreateEvent(selectedDate)"
-                            >
-                                <Plus class="size-3.5" />
-                                Event
-                            </Button>
-                        </div>
+                <div
+                    class="flex items-start justify-between gap-2 pr-8 xl:pr-0"
+                >
+                    <div>
+                        <p
+                            class="text-[11px] font-semibold tracking-[0.14em] text-indigo-500 uppercase"
+                        >
+                            Selected Day Workspace
+                        </p>
+                        <h3 class="mt-1 text-lg font-semibold">
+                            {{ formatDate(selectedDate) }}
+                        </h3>
                     </div>
 
-                    <!-- 1. Events on Selected Day (with Tasks inside Events & Subtasks!) -->
-                    <div class="mt-5">
-                        <div class="flex items-center justify-between">
-                            <h4
-                                class="flex items-center gap-1.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase"
-                            >
-                                <Sparkles class="size-3.5 text-indigo-500" />
-                                Events &amp; Bundled Tasks ({{
-                                    selectedDayDetails.events.length
-                                }})
-                            </h4>
-                        </div>
-
-                        <div
-                            v-if="selectedDayDetails.events.length"
-                            class="mt-3 space-y-3"
+                    <div class="flex items-center gap-1.5">
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            class="h-8 text-xs"
+                            @click="openCreateTask({ dateStr: selectedDate })"
                         >
-                            <article
-                                v-for="ev in selectedDayDetails.events"
-                                :key="ev.id"
-                                class="rounded-xl border bg-muted/15 p-4"
-                            >
-                                <div
-                                    class="flex items-start justify-between gap-2"
-                                >
-                                    <div class="min-w-0">
-                                        <div
-                                            class="flex flex-wrap items-center gap-1.5"
-                                        >
-                                            <span
-                                                :class="[
-                                                    'size-2 rounded-full',
-                                                    projectColorClasses[
-                                                        ev.color
-                                                    ].dot,
-                                                ]"
-                                            />
-                                            <Badge
-                                                variant="outline"
-                                                class="text-[10px]"
-                                                :class="
-                                                    calendarEventTypeClasses[
-                                                        ev.type
-                                                    ]
-                                                "
-                                            >
-                                                {{
-                                                    calendarEventTypeLabel[
-                                                        ev.type
-                                                    ]
-                                                }}
-                                            </Badge>
-                                            <span
-                                                v-if="ev.project"
-                                                class="rounded border bg-background px-1.5 py-0.5 text-[10px]"
-                                            >
-                                                {{ ev.project.name }}
-                                            </span>
-                                        </div>
+                            <Plus class="size-3.5" />
+                            Task
+                        </Button>
+                        <Button
+                            size="sm"
+                            class="h-8 text-xs"
+                            @click="openCreateEvent(selectedDate)"
+                        >
+                            <Plus class="size-3.5" />
+                            Event
+                        </Button>
+                    </div>
+                </div>
 
-                                        <h5
-                                            class="mt-1.5 text-sm font-semibold"
-                                        >
-                                            {{ ev.title }}
-                                        </h5>
+                <!-- 1. Events on Selected Day (with Tasks inside Events & Subtasks!) -->
+                <div class="mt-5">
+                    <div class="flex items-center justify-between">
+                        <h4
+                            class="flex items-center gap-1.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase"
+                        >
+                            <Sparkles class="size-3.5 text-indigo-500" />
+                            Events &amp; Bundled Tasks ({{
+                                selectedDayDetails.events.length
+                            }})
+                        </h4>
+                    </div>
 
-                                        <div
-                                            class="mt-1 flex flex-wrap items-center gap-3 text-[11px] text-muted-foreground"
-                                        >
-                                            <span
-                                                class="flex items-center gap-1"
-                                            >
-                                                <Clock class="size-3" />
-                                                <template v-if="ev.is_all_day">
-                                                    All day
-                                                </template>
-                                                <template
-                                                    v-else-if="ev.start_time"
-                                                >
-                                                    {{ ev.start_time
-                                                    }}{{
-                                                        ev.end_time
-                                                            ? ` – ${ev.end_time}`
-                                                            : ''
-                                                    }}
-                                                </template>
-                                                <template v-else>
-                                                    Scheduled
-                                                </template>
-                                            </span>
-
-                                            <span
-                                                v-if="ev.location"
-                                                class="flex items-center gap-1"
-                                            >
-                                                <MapPin class="size-3" />
-                                                {{ ev.location }}
-                                            </span>
-                                        </div>
-
-                                        <p
-                                            v-if="ev.description"
-                                            class="mt-1.5 text-xs text-muted-foreground"
-                                        >
-                                            {{ ev.description }}
-                                        </p>
-                                    </div>
-
+                    <div
+                        v-if="selectedDayDetails.events.length"
+                        class="mt-3 space-y-3"
+                    >
+                        <article
+                            v-for="ev in selectedDayDetails.events"
+                            :key="ev.id"
+                            class="rounded-xl border bg-muted/15 p-4"
+                        >
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="min-w-0">
                                     <div
-                                        class="flex shrink-0 items-center gap-1"
-                                    >
-                                        <Button
-                                            variant="ghost"
-                                            size="icon-sm"
-                                            title="Start 45m Focus Duration Timer for this event"
-                                            @click="
-                                                startItemFocusTimer(
-                                                    `Event: ${ev.title}`,
-                                                    45,
-                                                )
-                                            "
-                                        >
-                                            <Timer class="size-3.5" />
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon-sm"
-                                            aria-label="Edit event"
-                                            @click="openEditEvent(ev)"
-                                        >
-                                            <Pencil class="size-3.5" />
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon-sm"
-                                            class="text-rose-500 hover:text-rose-600"
-                                            aria-label="Delete event"
-                                            @click="removeEvent(ev)"
-                                        >
-                                            <Trash2 class="size-3.5" />
-                                        </Button>
-                                    </div>
-                                </div>
-
-                                <!-- Tasks Inside This Event -->
-                                <div
-                                    class="mt-3 rounded-xl border bg-background p-3"
-                                >
-                                    <div
-                                        class="flex items-center justify-between gap-2"
+                                        class="flex flex-wrap items-center gap-1.5"
                                     >
                                         <span
-                                            class="flex items-center gap-1.5 text-[11px] font-semibold"
-                                        >
-                                            <ListChecks
-                                                class="size-3.5 text-indigo-500"
-                                            />
-                                            Tasks inside event ({{
-                                                tasksInsideEvent(ev.id).length
-                                            }})
-                                        </span>
-                                        <button
-                                            type="button"
-                                            class="text-[11px] font-medium text-indigo-600 hover:underline dark:text-indigo-400"
-                                            @click="
-                                                openCreateTask({
-                                                    dateStr: selectedDate,
-                                                    eventId: ev.id,
-                                                })
+                                            :class="[
+                                                'size-2 rounded-full',
+                                                projectColorClasses[ev.color]
+                                                    .dot,
+                                            ]"
+                                        />
+                                        <Badge
+                                            variant="outline"
+                                            class="text-[10px]"
+                                            :class="
+                                                calendarEventTypeClasses[
+                                                    ev.type
+                                                ]
                                             "
                                         >
-                                            + Full task dialog
-                                        </button>
+                                            {{
+                                                calendarEventTypeLabel[ev.type]
+                                            }}
+                                        </Badge>
+                                        <span
+                                            v-if="ev.project"
+                                            class="rounded border bg-background px-1.5 py-0.5 text-[10px]"
+                                        >
+                                            {{ ev.project.name }}
+                                        </span>
                                     </div>
+
+                                    <h5 class="mt-1.5 text-sm font-semibold">
+                                        {{ ev.title }}
+                                    </h5>
 
                                     <div
-                                        v-if="tasksInsideEvent(ev.id).length"
-                                        class="mt-2 space-y-2"
+                                        class="mt-1 flex flex-wrap items-center gap-3 text-[11px] text-muted-foreground"
                                     >
-                                        <div
-                                            v-for="evTask in tasksInsideEvent(
-                                                ev.id,
-                                            )"
-                                            :key="evTask.id"
-                                            class="rounded-lg border bg-muted/20 p-2.5 text-xs"
+                                        <span class="flex items-center gap-1">
+                                            <Clock class="size-3" />
+                                            <template v-if="ev.is_all_day">
+                                                All day
+                                            </template>
+                                            <template v-else-if="ev.start_time">
+                                                {{ ev.start_time
+                                                }}{{
+                                                    ev.end_time
+                                                        ? ` – ${ev.end_time}`
+                                                        : ''
+                                                }}
+                                            </template>
+                                            <template v-else>
+                                                Scheduled
+                                            </template>
+                                        </span>
+
+                                        <span
+                                            v-if="ev.location"
+                                            class="flex items-center gap-1"
                                         >
-                                            <div
-                                                class="flex items-start justify-between gap-2"
-                                            >
-                                                <button
-                                                    type="button"
-                                                    class="flex min-w-0 flex-1 items-start gap-2 text-left"
-                                                    @click="toggleTask(evTask)"
-                                                >
-                                                    <CheckCircle2
-                                                        v-if="
-                                                            evTask.status ===
-                                                            'done'
-                                                        "
-                                                        class="mt-0.5 size-4 shrink-0 text-emerald-500"
-                                                    />
-                                                    <Circle
-                                                        v-else
-                                                        class="mt-0.5 size-4 shrink-0 text-muted-foreground"
-                                                    />
-                                                    <span
-                                                        :class="[
-                                                            'font-medium',
-                                                            evTask.status ===
-                                                            'done'
-                                                                ? 'text-muted-foreground line-through'
-                                                                : '',
-                                                        ]"
-                                                    >
-                                                        {{ evTask.title }}
-                                                    </span>
-                                                </button>
-
-                                                <div
-                                                    class="flex shrink-0 items-center gap-1"
-                                                >
-                                                    <button
-                                                        type="button"
-                                                        class="rounded p-1 text-muted-foreground hover:bg-background hover:text-foreground"
-                                                        title="Edit task & subtasks"
-                                                        @click="
-                                                            openEditTask(evTask)
-                                                        "
-                                                    >
-                                                        <Pencil
-                                                            class="size-3"
-                                                        />
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                            <!-- Subtasks inside Event's Task -->
-                                            <div
-                                                v-if="evTask.subtasks?.length"
-                                                class="mt-2 space-y-1 border-t pt-2 pl-5"
-                                            >
-                                                <div
-                                                    v-for="sub in evTask.subtasks"
-                                                    :key="sub.id"
-                                                    class="group/evsub flex items-center justify-between gap-2 text-[11px]"
-                                                >
-                                                    <button
-                                                        type="button"
-                                                        class="flex min-w-0 flex-1 items-center gap-1.5 text-left"
-                                                        @click="
-                                                            toggleSubtask(
-                                                                evTask,
-                                                                sub.id,
-                                                            )
-                                                        "
-                                                    >
-                                                        <CheckCircle2
-                                                            v-if="sub.completed"
-                                                            class="size-3 shrink-0 text-emerald-500"
-                                                        />
-                                                        <Circle
-                                                            v-else
-                                                            class="size-3 shrink-0 text-muted-foreground"
-                                                        />
-                                                        <span
-                                                            :class="
-                                                                sub.completed
-                                                                    ? 'text-muted-foreground line-through'
-                                                                    : ''
-                                                            "
-                                                        >
-                                                            {{ sub.title }}
-                                                        </span>
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        class="opacity-0 transition group-hover/evsub:opacity-100 hover:text-rose-500"
-                                                        @click="
-                                                            removeSubtask(
-                                                                evTask,
-                                                                sub.id,
-                                                            )
-                                                        "
-                                                    >
-                                                        <X class="size-2.5" />
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                            <form
-                                                class="mt-2 flex items-center gap-1.5 pl-5"
-                                                @submit.prevent="
-                                                    addInlineSubtask(evTask)
-                                                "
-                                            >
-                                                <Input
-                                                    v-model="
-                                                        inlineSubtaskInputs[
-                                                            evTask.id
-                                                        ]
-                                                    "
-                                                    placeholder="Add subtask to this task..."
-                                                    class="h-6 flex-1 text-[11px]"
-                                                />
-                                                <Button
-                                                    type="submit"
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    class="h-6 px-2 text-[10px]"
-                                                >
-                                                    + Subtask
-                                                </Button>
-                                            </form>
-                                        </div>
+                                            <MapPin class="size-3" />
+                                            {{ ev.location }}
+                                        </span>
                                     </div>
 
-                                    <form
-                                        class="mt-2.5 flex items-center gap-1.5"
-                                        @submit.prevent="
-                                            addQuickTaskToEvent(ev)
+                                    <p
+                                        v-if="ev.description"
+                                        class="mt-1.5 text-xs text-muted-foreground"
+                                    >
+                                        {{ ev.description }}
+                                    </p>
+                                </div>
+
+                                <div class="flex shrink-0 items-center gap-1">
+                                    <Button
+                                        variant="ghost"
+                                        size="icon-sm"
+                                        title="Start 45m Focus Duration Timer for this event"
+                                        @click="
+                                            startItemFocusTimer(
+                                                `Event: ${ev.title}`,
+                                                45,
+                                            )
                                         "
                                     >
-                                        <Input
-                                            v-model="
-                                                inlineEventTaskInputs[ev.id]
-                                            "
-                                            placeholder="Add a task inside this event..."
-                                            class="h-7 flex-1 text-xs"
-                                        />
-                                        <Button
-                                            type="submit"
-                                            size="sm"
-                                            variant="secondary"
-                                            class="h-7 px-2.5 text-xs"
-                                        >
-                                            <Plus class="size-3" />
-                                            Add Task
-                                        </Button>
-                                    </form>
+                                        <Timer class="size-3.5" />
+                                    </Button>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon-sm"
+                                        aria-label="Edit event"
+                                        @click="openEditEvent(ev)"
+                                    >
+                                        <Pencil class="size-3.5" />
+                                    </Button>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon-sm"
+                                        class="text-rose-500 hover:text-rose-600"
+                                        aria-label="Delete event"
+                                        @click="removeEvent(ev)"
+                                    >
+                                        <Trash2 class="size-3.5" />
+                                    </Button>
                                 </div>
-                            </article>
-                        </div>
+                            </div>
 
-                        <p
-                            v-else
-                            class="mt-2 rounded-xl border border-dashed p-4 text-center text-xs text-muted-foreground"
-                        >
-                            No events scheduled for this day.
-                        </p>
-                    </div>
-
-                    <!-- 2. Tasks Due on Selected Day (with Subtasks!) -->
-                    <div class="mt-6 border-t pt-5">
-                        <div class="flex items-center justify-between">
-                            <h4
-                                class="flex items-center gap-1.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase"
-                            >
-                                <ListTodo class="size-3.5 text-emerald-500" />
-                                Tasks Due on This Day ({{
-                                    selectedDayDetails.tasks.length
-                                }})
-                            </h4>
-                            <Link
-                                href="/tasks"
-                                class="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
-                            >
-                                Kanban board
-                                <ArrowUpRight class="size-3" />
-                            </Link>
-                        </div>
-
-                        <div
-                            v-if="selectedDayDetails.tasks.length"
-                            class="mt-3 space-y-2.5"
-                        >
+                            <!-- Tasks Inside This Event -->
                             <div
-                                v-for="task in selectedDayDetails.tasks"
-                                :key="task.id"
-                                class="rounded-xl border bg-muted/15 p-3 text-xs"
+                                class="mt-3 rounded-xl border bg-background p-3"
                             >
                                 <div
-                                    class="flex items-start justify-between gap-2"
+                                    class="flex items-center justify-between gap-2"
                                 >
+                                    <span
+                                        class="flex items-center gap-1.5 text-[11px] font-semibold"
+                                    >
+                                        <ListChecks
+                                            class="size-3.5 text-indigo-500"
+                                        />
+                                        Tasks inside event ({{
+                                            tasksInsideEvent(ev.id).length
+                                        }})
+                                    </span>
                                     <button
                                         type="button"
-                                        class="flex min-w-0 flex-1 items-start gap-2 text-left"
-                                        @click="toggleTask(task)"
+                                        class="text-[11px] font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+                                        @click="
+                                            openCreateTask({
+                                                dateStr: selectedDate,
+                                                eventId: ev.id,
+                                            })
+                                        "
                                     >
-                                        <CheckCircle2
-                                            v-if="task.status === 'done'"
-                                            class="mt-0.5 size-4 shrink-0 text-emerald-500"
-                                        />
-                                        <Circle
-                                            v-else
-                                            class="mt-0.5 size-4 shrink-0 text-muted-foreground"
-                                        />
-                                        <div class="min-w-0 flex-1">
-                                            <p
-                                                :class="[
-                                                    'font-semibold',
-                                                    task.status === 'done'
-                                                        ? 'text-muted-foreground line-through'
-                                                        : '',
-                                                ]"
-                                            >
-                                                {{ task.title }}
-                                            </p>
-                                            <div
-                                                class="mt-1 flex flex-wrap items-center gap-2"
-                                            >
-                                                <span
-                                                    v-if="task.project"
-                                                    class="inline-flex items-center gap-1 rounded border bg-background px-1.5 py-0.5 text-[10px]"
-                                                >
-                                                    <span
-                                                        :class="[
-                                                            'size-1.5 rounded-full',
-                                                            projectColorClasses[
-                                                                task.project
-                                                                    .color
-                                                            ].dot,
-                                                        ]"
-                                                    />
-                                                    {{ task.project.name }}
-                                                </span>
-                                                <span
-                                                    v-if="task.event"
-                                                    class="inline-flex items-center gap-1 rounded border border-indigo-500/30 bg-indigo-500/10 px-1.5 py-0.5 text-[10px] text-indigo-700 dark:text-indigo-300"
-                                                >
-                                                    {{ task.event.title }}
-                                                </span>
-                                                <span
-                                                    class="inline-flex items-center gap-1 text-[10px] text-muted-foreground capitalize"
-                                                >
-                                                    <span
-                                                        :class="[
-                                                            'size-1.5 rounded-full',
-                                                            taskPriorityClasses[
-                                                                task.priority
-                                                            ],
-                                                        ]"
-                                                    />
-                                                    {{ task.priority }}
-                                                </span>
-                                            </div>
-                                        </div>
+                                        + Full task dialog
                                     </button>
-
-                                    <div class="flex items-center gap-1">
-                                        <Button
-                                            variant="ghost"
-                                            size="icon-sm"
-                                            title="Start 45m Focus Duration Timer for this task"
-                                            @click="
-                                                startItemFocusTimer(
-                                                    `Task: ${task.title}`,
-                                                    45,
-                                                )
-                                            "
-                                        >
-                                            <Timer class="size-3.5" />
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon-sm"
-                                            aria-label="Edit task"
-                                            @click="openEditTask(task)"
-                                        >
-                                            <Pencil class="size-3.5" />
-                                        </Button>
-                                    </div>
                                 </div>
 
                                 <div
-                                    v-if="task.subtasks?.length"
-                                    class="mt-2.5"
+                                    v-if="tasksInsideEvent(ev.id).length"
+                                    class="mt-2 space-y-2"
                                 >
-                                    <ProgressBar
-                                        :value="subtaskProgress(task.subtasks)"
-                                        color="emerald"
-                                    />
-                                    <div class="mt-2 space-y-1 pl-4">
+                                    <div
+                                        v-for="evTask in tasksInsideEvent(
+                                            ev.id,
+                                        )"
+                                        :key="evTask.id"
+                                        class="rounded-lg border bg-muted/20 p-2.5 text-xs"
+                                    >
                                         <div
-                                            v-for="sub in task.subtasks"
-                                            :key="sub.id"
-                                            class="group/tsub flex items-center justify-between gap-2 text-[11px]"
+                                            class="flex items-start justify-between gap-2"
                                         >
                                             <button
                                                 type="button"
-                                                class="flex min-w-0 flex-1 items-center gap-1.5 text-left"
-                                                @click="
-                                                    toggleSubtask(task, sub.id)
-                                                "
+                                                class="flex min-w-0 flex-1 items-start gap-2 text-left"
+                                                @click="toggleTask(evTask)"
                                             >
                                                 <CheckCircle2
-                                                    v-if="sub.completed"
-                                                    class="size-3 shrink-0 text-emerald-500"
+                                                    v-if="
+                                                        evTask.status === 'done'
+                                                    "
+                                                    class="mt-0.5 size-4 shrink-0 text-emerald-500"
                                                 />
                                                 <Circle
                                                     v-else
-                                                    class="size-3 shrink-0 text-muted-foreground"
+                                                    class="mt-0.5 size-4 shrink-0 text-muted-foreground"
                                                 />
                                                 <span
-                                                    :class="
-                                                        sub.completed
+                                                    :class="[
+                                                        'font-medium',
+                                                        evTask.status === 'done'
                                                             ? 'text-muted-foreground line-through'
-                                                            : ''
-                                                    "
+                                                            : '',
+                                                    ]"
                                                 >
-                                                    {{ sub.title }}
+                                                    {{ evTask.title }}
                                                 </span>
                                             </button>
-                                            <button
-                                                type="button"
-                                                class="opacity-0 transition group-hover/tsub:opacity-100 hover:text-rose-500"
-                                                @click="
-                                                    removeSubtask(task, sub.id)
-                                                "
+
+                                            <div
+                                                class="flex shrink-0 items-center gap-1"
                                             >
-                                                <X class="size-3" />
-                                            </button>
+                                                <button
+                                                    type="button"
+                                                    class="rounded p-1 text-muted-foreground hover:bg-background hover:text-foreground"
+                                                    title="Edit task & subtasks"
+                                                    @click="
+                                                        openEditTask(evTask)
+                                                    "
+                                                >
+                                                    <Pencil class="size-3" />
+                                                </button>
+                                            </div>
                                         </div>
+
+                                        <!-- Subtasks inside Event's Task -->
+                                        <div
+                                            v-if="evTask.subtasks?.length"
+                                            class="mt-2 space-y-1 border-t pt-2 pl-5"
+                                        >
+                                            <div
+                                                v-for="sub in evTask.subtasks"
+                                                :key="sub.id"
+                                                class="group/evsub flex items-center justify-between gap-2 text-[11px]"
+                                            >
+                                                <button
+                                                    type="button"
+                                                    class="flex min-w-0 flex-1 items-center gap-1.5 text-left"
+                                                    @click="
+                                                        toggleSubtask(
+                                                            evTask,
+                                                            sub.id,
+                                                        )
+                                                    "
+                                                >
+                                                    <CheckCircle2
+                                                        v-if="sub.completed"
+                                                        class="size-3 shrink-0 text-emerald-500"
+                                                    />
+                                                    <Circle
+                                                        v-else
+                                                        class="size-3 shrink-0 text-muted-foreground"
+                                                    />
+                                                    <span
+                                                        :class="
+                                                            sub.completed
+                                                                ? 'text-muted-foreground line-through'
+                                                                : ''
+                                                        "
+                                                    >
+                                                        {{ sub.title }}
+                                                    </span>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    class="opacity-0 transition group-hover/evsub:opacity-100 hover:text-rose-500"
+                                                    @click="
+                                                        removeSubtask(
+                                                            evTask,
+                                                            sub.id,
+                                                        )
+                                                    "
+                                                >
+                                                    <X class="size-2.5" />
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <form
+                                            class="mt-2 flex items-center gap-1.5 pl-5"
+                                            @submit.prevent="
+                                                addInlineSubtask(evTask)
+                                            "
+                                        >
+                                            <Input
+                                                v-model="
+                                                    inlineSubtaskInputs[
+                                                        evTask.id
+                                                    ]
+                                                "
+                                                placeholder="Add subtask to this task..."
+                                                class="h-6 flex-1 text-[11px]"
+                                            />
+                                            <Button
+                                                type="submit"
+                                                variant="ghost"
+                                                size="sm"
+                                                class="h-6 px-2 text-[10px]"
+                                            >
+                                                + Subtask
+                                            </Button>
+                                        </form>
                                     </div>
                                 </div>
 
                                 <form
-                                    class="mt-2 flex items-center gap-1.5 pl-4"
-                                    @submit.prevent="addInlineSubtask(task)"
+                                    class="mt-2.5 flex items-center gap-1.5"
+                                    @submit.prevent="addQuickTaskToEvent(ev)"
                                 >
                                     <Input
-                                        v-model="inlineSubtaskInputs[task.id]"
-                                        placeholder="Add subtask..."
-                                        class="h-6 flex-1 text-[11px]"
+                                        v-model="inlineEventTaskInputs[ev.id]"
+                                        placeholder="Add a task inside this event..."
+                                        class="h-7 flex-1 text-xs"
                                     />
                                     <Button
                                         type="submit"
-                                        variant="ghost"
                                         size="sm"
-                                        class="h-6 px-2 text-[10px]"
+                                        variant="secondary"
+                                        class="h-7 px-2.5 text-xs"
                                     >
-                                        + Subtask
+                                        <Plus class="size-3" />
+                                        Add Task
                                     </Button>
                                 </form>
                             </div>
-                        </div>
-
-                        <p
-                            v-else
-                            class="mt-2 rounded-xl border border-dashed p-4 text-center text-xs text-muted-foreground"
-                        >
-                            No tasks due on this day.
-                        </p>
+                        </article>
                     </div>
 
-                    <!-- 3. Project & Career Milestones on Selected Day -->
-                    <div
-                        v-if="
-                            selectedDayDetails.projectMilestones.length ||
-                            selectedDayDetails.careerMilestones.length
-                        "
-                        class="mt-6 border-t pt-5"
+                    <p
+                        v-else
+                        class="mt-2 rounded-xl border border-dashed p-4 text-center text-xs text-muted-foreground"
                     >
+                        No events scheduled for this day.
+                    </p>
+                </div>
+
+                <!-- 2. Tasks Due on Selected Day (with Subtasks!) -->
+                <div class="mt-6 border-t pt-5">
+                    <div class="flex items-center justify-between">
                         <h4
-                            class="text-xs font-semibold tracking-wider text-muted-foreground uppercase"
+                            class="flex items-center gap-1.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase"
                         >
-                            Connected Project &amp; Career Milestones
+                            <ListTodo class="size-3.5 text-emerald-500" />
+                            Tasks Due on This Day ({{
+                                selectedDayDetails.tasks.length
+                            }})
                         </h4>
+                        <Link
+                            href="/tasks"
+                            class="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+                        >
+                            Kanban board
+                            <ArrowUpRight class="size-3" />
+                        </Link>
+                    </div>
 
-                        <div class="mt-2.5 space-y-2">
-                            <Link
-                                v-for="pm in selectedDayDetails.projectMilestones"
-                                :key="pm.id"
-                                href="/projects"
-                                class="flex items-center justify-between rounded-xl border bg-muted/20 px-3 py-2 text-xs transition hover:bg-muted/40"
-                            >
-                                <div class="flex items-center gap-2">
-                                    <FolderKanban
-                                        class="size-3.5 text-amber-500"
-                                    />
-                                    <span class="font-medium">{{
-                                        pm.project.name
-                                    }}</span>
-                                </div>
-                                <Badge variant="outline" class="text-[10px]">
-                                    {{
-                                        pm.kind === 'start'
-                                            ? 'Project Kickoff'
-                                            : 'Project Target Due'
-                                    }}
-                                </Badge>
-                            </Link>
-
-                            <Link
-                                v-for="cm in selectedDayDetails.careerMilestones"
-                                :key="cm.id"
-                                href="/career"
-                                class="flex items-center justify-between rounded-xl border bg-muted/20 px-3 py-2 text-xs transition hover:bg-muted/40"
-                            >
-                                <div class="flex items-center gap-2">
-                                    <Target class="size-3.5 text-rose-500" />
-                                    <span class="font-medium">{{
-                                        cm.title
-                                    }}</span>
-                                </div>
-                                <Badge
-                                    variant="outline"
-                                    class="text-[10px]"
-                                    :class="careerTypeClasses[cm.type]"
+                    <div
+                        v-if="selectedDayDetails.tasks.length"
+                        class="mt-3 space-y-2.5"
+                    >
+                        <div
+                            v-for="task in selectedDayDetails.tasks"
+                            :key="task.id"
+                            class="rounded-xl border bg-muted/15 p-3 text-xs"
+                        >
+                            <div class="flex items-start justify-between gap-2">
+                                <button
+                                    type="button"
+                                    class="flex min-w-0 flex-1 items-start gap-2 text-left"
+                                    @click="toggleTask(task)"
                                 >
-                                    {{ careerTypeLabel[cm.type] }}
-                                </Badge>
-                            </Link>
+                                    <CheckCircle2
+                                        v-if="task.status === 'done'"
+                                        class="mt-0.5 size-4 shrink-0 text-emerald-500"
+                                    />
+                                    <Circle
+                                        v-else
+                                        class="mt-0.5 size-4 shrink-0 text-muted-foreground"
+                                    />
+                                    <div class="min-w-0 flex-1">
+                                        <p
+                                            :class="[
+                                                'font-semibold',
+                                                task.status === 'done'
+                                                    ? 'text-muted-foreground line-through'
+                                                    : '',
+                                            ]"
+                                        >
+                                            {{ task.title }}
+                                        </p>
+                                        <div
+                                            class="mt-1 flex flex-wrap items-center gap-2"
+                                        >
+                                            <span
+                                                v-if="task.project"
+                                                class="inline-flex items-center gap-1 rounded border bg-background px-1.5 py-0.5 text-[10px]"
+                                            >
+                                                <span
+                                                    :class="[
+                                                        'size-1.5 rounded-full',
+                                                        projectColorClasses[
+                                                            task.project.color
+                                                        ].dot,
+                                                    ]"
+                                                />
+                                                {{ task.project.name }}
+                                            </span>
+                                            <span
+                                                v-if="task.event"
+                                                class="inline-flex items-center gap-1 rounded border border-indigo-500/30 bg-indigo-500/10 px-1.5 py-0.5 text-[10px] text-indigo-700 dark:text-indigo-300"
+                                            >
+                                                {{ task.event.title }}
+                                            </span>
+                                            <span
+                                                class="inline-flex items-center gap-1 text-[10px] text-muted-foreground capitalize"
+                                            >
+                                                <span
+                                                    :class="[
+                                                        'size-1.5 rounded-full',
+                                                        taskPriorityClasses[
+                                                            task.priority
+                                                        ],
+                                                    ]"
+                                                />
+                                                {{ task.priority }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </button>
+
+                                <div class="flex items-center gap-1">
+                                    <Button
+                                        variant="ghost"
+                                        size="icon-sm"
+                                        title="Start 45m Focus Duration Timer for this task"
+                                        @click="
+                                            startItemFocusTimer(
+                                                `Task: ${task.title}`,
+                                                45,
+                                            )
+                                        "
+                                    >
+                                        <Timer class="size-3.5" />
+                                    </Button>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon-sm"
+                                        aria-label="Edit task"
+                                        @click="openEditTask(task)"
+                                    >
+                                        <Pencil class="size-3.5" />
+                                    </Button>
+                                </div>
+                            </div>
+
+                            <div v-if="task.subtasks?.length" class="mt-2.5">
+                                <ProgressBar
+                                    :value="subtaskProgress(task.subtasks)"
+                                    color="emerald"
+                                />
+                                <div class="mt-2 space-y-1 pl-4">
+                                    <div
+                                        v-for="sub in task.subtasks"
+                                        :key="sub.id"
+                                        class="group/tsub flex items-center justify-between gap-2 text-[11px]"
+                                    >
+                                        <button
+                                            type="button"
+                                            class="flex min-w-0 flex-1 items-center gap-1.5 text-left"
+                                            @click="toggleSubtask(task, sub.id)"
+                                        >
+                                            <CheckCircle2
+                                                v-if="sub.completed"
+                                                class="size-3 shrink-0 text-emerald-500"
+                                            />
+                                            <Circle
+                                                v-else
+                                                class="size-3 shrink-0 text-muted-foreground"
+                                            />
+                                            <span
+                                                :class="
+                                                    sub.completed
+                                                        ? 'text-muted-foreground line-through'
+                                                        : ''
+                                                "
+                                            >
+                                                {{ sub.title }}
+                                            </span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="opacity-0 transition group-hover/tsub:opacity-100 hover:text-rose-500"
+                                            @click="removeSubtask(task, sub.id)"
+                                        >
+                                            <X class="size-3" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <form
+                                class="mt-2 flex items-center gap-1.5 pl-4"
+                                @submit.prevent="addInlineSubtask(task)"
+                            >
+                                <Input
+                                    v-model="inlineSubtaskInputs[task.id]"
+                                    placeholder="Add subtask..."
+                                    class="h-6 flex-1 text-[11px]"
+                                />
+                                <Button
+                                    type="submit"
+                                    variant="ghost"
+                                    size="sm"
+                                    class="h-6 px-2 text-[10px]"
+                                >
+                                    + Subtask
+                                </Button>
+                            </form>
                         </div>
                     </div>
+
+                    <p
+                        v-else
+                        class="mt-2 rounded-xl border border-dashed p-4 text-center text-xs text-muted-foreground"
+                    >
+                        No tasks due on this day.
+                    </p>
+                </div>
+
+                <!-- 3. Project & Career Milestones on Selected Day -->
+                <div
+                    v-if="
+                        selectedDayDetails.projectMilestones.length ||
+                        selectedDayDetails.careerMilestones.length
+                    "
+                    class="mt-6 border-t pt-5"
+                >
+                    <h4
+                        class="text-xs font-semibold tracking-wider text-muted-foreground uppercase"
+                    >
+                        Connected Project &amp; Career Milestones
+                    </h4>
+
+                    <div class="mt-2.5 space-y-2">
+                        <Link
+                            v-for="pm in selectedDayDetails.projectMilestones"
+                            :key="pm.id"
+                            href="/projects"
+                            class="flex items-center justify-between rounded-xl border bg-muted/20 px-3 py-2 text-xs transition hover:bg-muted/40"
+                        >
+                            <div class="flex items-center gap-2">
+                                <FolderKanban class="size-3.5 text-amber-500" />
+                                <span class="font-medium">{{
+                                    pm.project.name
+                                }}</span>
+                            </div>
+                            <Badge variant="outline" class="text-[10px]">
+                                {{
+                                    pm.kind === 'start'
+                                        ? 'Project Kickoff'
+                                        : 'Project Target Due'
+                                }}
+                            </Badge>
+                        </Link>
+
+                        <Link
+                            v-for="cm in selectedDayDetails.careerMilestones"
+                            :key="cm.id"
+                            href="/career"
+                            class="flex items-center justify-between rounded-xl border bg-muted/20 px-3 py-2 text-xs transition hover:bg-muted/40"
+                        >
+                            <div class="flex items-center gap-2">
+                                <Target class="size-3.5 text-rose-500" />
+                                <span class="font-medium">{{ cm.title }}</span>
+                            </div>
+                            <Badge
+                                variant="outline"
+                                class="text-[10px]"
+                                :class="careerTypeClasses[cm.type]"
+                            >
+                                {{ careerTypeLabel[cm.type] }}
+                            </Badge>
+                        </Link>
+                    </div>
+                </div>
             </DefineDayWorkspace>
 
             <!-- Right (Desktop): Selected Day Inspector & Event/Task/Subtask Workspace -->
@@ -1831,7 +1796,9 @@ function startItemFocusTimer(label: string, minutes = 45): void {
         :default-event-id="defaultTaskEventId"
     />
 
-    <div class="fixed right-5 bottom-5 z-40 flex flex-col items-end gap-3 sm:hidden">
+    <div
+        class="fixed right-5 bottom-5 z-40 flex flex-col items-end gap-3 sm:hidden"
+    >
         <Button
             variant="outline"
             size="icon"

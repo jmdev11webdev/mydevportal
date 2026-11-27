@@ -149,7 +149,9 @@ function submit(): void {
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="stack-name">Technologies (optional multi-select)</Label>
+                    <Label for="stack-name"
+                        >Technologies (optional multi-select)</Label
+                    >
                     <TechStackSelector
                         id="stack-name"
                         :model-value="selectedTools"

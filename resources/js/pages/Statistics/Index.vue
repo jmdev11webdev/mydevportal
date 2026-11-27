@@ -197,7 +197,9 @@ function formatCurrency(value: number): string {
                             Active value
                         </p>
                         <p class="mt-1 text-lg font-semibold tabular-nums">
-                            {{ formatCurrency(statistics.pipeline.active_value) }}
+                            {{
+                                formatCurrency(statistics.pipeline.active_value)
+                            }}
                         </p>
                     </div>
                     <div class="rounded-xl border bg-muted/20 p-3">
@@ -205,7 +207,9 @@ function formatCurrency(value: number): string {
                             Total pipeline
                         </p>
                         <p class="mt-1 text-lg font-semibold tabular-nums">
-                            {{ formatCurrency(statistics.pipeline.total_value) }}
+                            {{
+                                formatCurrency(statistics.pipeline.total_value)
+                            }}
                         </p>
                     </div>
                     <div class="rounded-xl border bg-muted/20 p-3">
@@ -229,11 +233,14 @@ function formatCurrency(value: number): string {
                                 <span
                                     :class="[
                                         'size-2 rounded-full',
-                                        stageColors[stage.stage] ?? 'bg-slate-400',
+                                        stageColors[stage.stage] ??
+                                            'bg-slate-400',
                                     ]"
                                 />
                                 <span class="font-medium">
-                                    {{ stageLabels[stage.stage] ?? stage.stage }}
+                                    {{
+                                        stageLabels[stage.stage] ?? stage.stage
+                                    }}
                                 </span>
                                 <span class="text-muted-foreground">
                                     ({{ stage.count }})
@@ -243,7 +250,9 @@ function formatCurrency(value: number): string {
                                 {{ formatCurrency(stage.value) }}
                             </span>
                         </div>
-                        <div class="h-1.5 overflow-hidden rounded-full bg-muted">
+                        <div
+                            class="h-1.5 overflow-hidden rounded-full bg-muted"
+                        >
                             <div
                                 :class="[
                                     'h-full rounded-full transition-all',
@@ -254,7 +263,8 @@ function formatCurrency(value: number): string {
                                         statistics.pipeline.total > 0
                                             ? Math.round(
                                                   (stage.count /
-                                                      statistics.pipeline.total) *
+                                                      statistics.pipeline
+                                                          .total) *
                                                       100,
                                               )
                                             : 0
@@ -266,7 +276,9 @@ function formatCurrency(value: number): string {
                 </div>
             </section>
 
-            <section class="flex flex-col justify-between rounded-2xl border bg-card p-5 shadow-sm">
+            <section
+                class="flex flex-col justify-between rounded-2xl border bg-card p-5 shadow-sm"
+            >
                 <div>
                     <div class="flex items-center justify-between gap-2">
                         <div class="flex items-center gap-2">
@@ -384,15 +396,21 @@ function formatCurrency(value: number): string {
                 <dl class="mt-4 space-y-1.5 text-xs">
                     <div class="flex justify-between">
                         <dt class="text-muted-foreground">Active</dt>
-                        <dd class="font-medium">{{ statistics.projects.active }}</dd>
+                        <dd class="font-medium">
+                            {{ statistics.projects.active }}
+                        </dd>
                     </div>
                     <div class="flex justify-between">
                         <dt class="text-muted-foreground">Planning</dt>
-                        <dd class="font-medium">{{ statistics.projects.planning }}</dd>
+                        <dd class="font-medium">
+                            {{ statistics.projects.planning }}
+                        </dd>
                     </div>
                     <div class="flex justify-between">
                         <dt class="text-muted-foreground">Completed</dt>
-                        <dd class="font-medium">{{ statistics.projects.completed }}</dd>
+                        <dd class="font-medium">
+                            {{ statistics.projects.completed }}
+                        </dd>
                     </div>
                 </dl>
             </section>
@@ -410,20 +428,28 @@ function formatCurrency(value: number): string {
                 <dl class="mt-4 space-y-2 text-xs">
                     <div class="flex justify-between">
                         <dt class="text-muted-foreground">Achieved</dt>
-                        <dd class="font-semibold text-emerald-600 dark:text-emerald-400">
+                        <dd
+                            class="font-semibold text-emerald-600 dark:text-emerald-400"
+                        >
                             {{ statistics.career.achieved }}
                         </dd>
                     </div>
                     <div class="flex justify-between">
                         <dt class="text-muted-foreground">In progress</dt>
-                        <dd class="font-medium">{{ statistics.career.in_progress }}</dd>
+                        <dd class="font-medium">
+                            {{ statistics.career.in_progress }}
+                        </dd>
                     </div>
                     <div class="flex justify-between">
                         <dt class="text-muted-foreground">Planned</dt>
-                        <dd class="font-medium">{{ statistics.career.planned }}</dd>
+                        <dd class="font-medium">
+                            {{ statistics.career.planned }}
+                        </dd>
                     </div>
                     <div class="flex justify-between border-t pt-2">
-                        <dt class="text-muted-foreground">Goals / Apps / Milestones</dt>
+                        <dt class="text-muted-foreground">
+                            Goals / Apps / Milestones
+                        </dt>
                         <dd class="font-mono text-[11px]">
                             {{ statistics.career.goals }} /
                             {{ statistics.career.applications }} /
@@ -446,19 +472,27 @@ function formatCurrency(value: number): string {
                 <dl class="mt-4 space-y-2 text-xs">
                     <div class="flex justify-between">
                         <dt class="text-muted-foreground">Core</dt>
-                        <dd class="font-semibold">{{ statistics.stack.core }}</dd>
+                        <dd class="font-semibold">
+                            {{ statistics.stack.core }}
+                        </dd>
                     </div>
                     <div class="flex justify-between">
                         <dt class="text-muted-foreground">Proficient</dt>
-                        <dd class="font-medium">{{ statistics.stack.proficient }}</dd>
+                        <dd class="font-medium">
+                            {{ statistics.stack.proficient }}
+                        </dd>
                     </div>
                     <div class="flex justify-between">
                         <dt class="text-muted-foreground">Learning</dt>
-                        <dd class="font-medium">{{ statistics.stack.learning }}</dd>
+                        <dd class="font-medium">
+                            {{ statistics.stack.learning }}
+                        </dd>
                     </div>
                     <div class="flex justify-between">
                         <dt class="text-muted-foreground">Evaluating</dt>
-                        <dd class="font-medium">{{ statistics.stack.evaluating }}</dd>
+                        <dd class="font-medium">
+                            {{ statistics.stack.evaluating }}
+                        </dd>
                     </div>
                 </dl>
             </section>
@@ -474,19 +508,27 @@ function formatCurrency(value: number): string {
                 <dl class="mt-4 space-y-2 text-xs">
                     <div class="flex justify-between">
                         <dt class="text-muted-foreground">Total notes</dt>
-                        <dd class="font-semibold">{{ statistics.workspace.notes }}</dd>
+                        <dd class="font-semibold">
+                            {{ statistics.workspace.notes }}
+                        </dd>
                     </div>
                     <div class="flex justify-between">
                         <dt class="text-muted-foreground">Pinned notes</dt>
-                        <dd class="font-medium">{{ statistics.workspace.pinned_notes }}</dd>
+                        <dd class="font-medium">
+                            {{ statistics.workspace.pinned_notes }}
+                        </dd>
                     </div>
                     <div class="flex justify-between">
                         <dt class="text-muted-foreground">Calendar events</dt>
-                        <dd class="font-medium">{{ statistics.workspace.events }}</dd>
+                        <dd class="font-medium">
+                            {{ statistics.workspace.events }}
+                        </dd>
                     </div>
                     <div class="flex justify-between">
                         <dt class="text-muted-foreground">Upcoming events</dt>
-                        <dd class="font-medium">{{ statistics.workspace.upcoming_events }}</dd>
+                        <dd class="font-medium">
+                            {{ statistics.workspace.upcoming_events }}
+                        </dd>
                     </div>
                 </dl>
             </section>
