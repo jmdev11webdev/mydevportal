@@ -17,7 +17,9 @@ type Props = {
 
 const props = defineProps<Props>();
 
-const activeTone = computed<Tone>(() => props.tone ?? props.accent ?? 'neutral');
+const activeTone = computed<Tone>(
+    () => props.tone ?? props.accent ?? 'neutral',
+);
 
 const iconToneClasses: Record<Tone, string> = {
     neutral:
@@ -85,7 +87,11 @@ const accentBarClasses: Record<Tone, string> = {
                     )
                 "
             >
-                <component :is="icon" class="size-[18px]" :stroke-width="1.85" />
+                <component
+                    :is="icon"
+                    class="size-[18px]"
+                    :stroke-width="1.85"
+                />
             </div>
         </div>
         <slot />

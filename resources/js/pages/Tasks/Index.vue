@@ -239,7 +239,11 @@ function startTaskFocusTimer(task: Task, minutes = 45): void {
             :icon="ListChecks"
         >
             <template #actions>
-                <Button variant="outline" class="hidden sm:inline-flex" as-child>
+                <Button
+                    variant="outline"
+                    class="hidden sm:inline-flex"
+                    as-child
+                >
                     <Link href="/calendar">
                         <CalendarDays class="size-4" />
                         Open Calendar
@@ -608,7 +612,9 @@ function startTaskFocusTimer(task: Task, minutes = 45): void {
         :default-project-id="defaultProjectId"
     />
 
-    <div class="fixed right-5 bottom-5 z-40 flex flex-col items-end gap-3 sm:hidden">
+    <div
+        class="fixed right-5 bottom-5 z-40 flex flex-col items-end gap-3 sm:hidden"
+    >
         <Button
             variant="outline"
             size="icon"

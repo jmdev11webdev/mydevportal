@@ -347,9 +347,12 @@ function progressFor(project: Project): number {
                         >
                             Overall statistics
                         </p>
-                        <p class="mt-1 text-sm font-medium text-muted-foreground">
+                        <p
+                            class="mt-1 text-sm font-medium text-muted-foreground"
+                        >
                             {{ overall.tasks.completion_rate }}% tasks done ·
-                            ${{ overall.pipeline.won_value.toLocaleString() }} won
+                            ${{ overall.pipeline.won_value.toLocaleString() }}
+                            won
                         </p>
                     </div>
                     <div

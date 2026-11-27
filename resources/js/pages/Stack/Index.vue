@@ -235,7 +235,9 @@ function destroyItem(item: StackItem): void {
                 </div>
             </div>
 
-            <div class="flex items-center justify-between gap-2 border-t pt-2.5 sm:hidden">
+            <div
+                class="flex items-center justify-between gap-2 border-t pt-2.5 sm:hidden"
+            >
                 <span class="text-[11px] font-medium text-muted-foreground">
                     Status
                 </span>
@@ -259,7 +261,9 @@ function destroyItem(item: StackItem): void {
                 </Select>
             </div>
 
-            <div class="hidden flex-wrap items-center gap-1.5 border-t pt-2.5 sm:flex">
+            <div
+                class="hidden flex-wrap items-center gap-1.5 border-t pt-2.5 sm:flex"
+            >
                 <span
                     class="mr-1 text-[11px] font-medium text-muted-foreground"
                 >

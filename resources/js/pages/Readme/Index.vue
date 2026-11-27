@@ -751,7 +751,9 @@ function reset(): void {
 <template>
     <Head title="README generator" />
 
-    <div class="flex min-w-0 flex-1 flex-col gap-6 overflow-x-hidden p-4 md:p-6">
+    <div
+        class="flex min-w-0 flex-1 flex-col gap-6 overflow-x-hidden p-4 md:p-6"
+    >
         <PageHeader
             eyebrow="Ship"
             title="README generator"
@@ -759,7 +761,9 @@ function reset(): void {
             :icon="FileCode"
         >
             <template #actions>
-                <div class="grid w-full grid-cols-3 gap-2 sm:flex sm:w-auto sm:items-center">
+                <div
+                    class="grid w-full grid-cols-3 gap-2 sm:flex sm:w-auto sm:items-center"
+                >
                     <Button
                         type="button"
                         variant="outline"
@@ -796,8 +800,12 @@ function reset(): void {
             </template>
         </PageHeader>
 
-        <div class="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-            <div class="min-w-0 space-y-5 rounded-2xl border bg-card p-4 shadow-sm sm:p-5">
+        <div
+            class="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
+        >
+            <div
+                class="min-w-0 space-y-5 rounded-2xl border bg-card p-4 shadow-sm sm:p-5"
+            >
                 <div class="grid gap-2">
                     <Label for="project">Start from a project</Label>
                     <Select
