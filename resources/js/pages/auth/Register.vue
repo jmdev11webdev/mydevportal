@@ -109,7 +109,7 @@ defineOptions({
                 data-test="register-user-button"
             >
                 <Spinner v-if="processing" />
-                Create account
+                {{ processing ? 'Creating account...' : 'Create account' }}
             </Button>
         </div>
 

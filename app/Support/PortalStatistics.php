@@ -22,7 +22,7 @@ class PortalStatistics
      *
      * @return array<string, mixed>
      */
-    public static function forUser(User $user): array
+    public static function forUser(User $user, bool $includeDownloads = false): array
     {
         $today = now()->startOfDay();
         $weekStart = now()->startOfWeek();
@@ -181,7 +181,7 @@ class PortalStatistics
                 )->count(),
                 'weekly_trend' => $weeklyTrend,
             ],
-            'downloads' => self::releaseDownloads(),
+            ...($includeDownloads ? ['downloads' => self::releaseDownloads()] : []),
         ];
     }
 

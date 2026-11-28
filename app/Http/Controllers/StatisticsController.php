@@ -12,7 +12,7 @@ class StatisticsController extends Controller
     public function __invoke(Request $request): Response
     {
         return Inertia::render('Statistics/Index', [
-            'statistics' => PortalStatistics::forUser($request->user()),
+            'statistics' => PortalStatistics::forUser($request->user(), includeDownloads: true),
         ]);
     }
 }
