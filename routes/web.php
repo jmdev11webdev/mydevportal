@@ -14,9 +14,24 @@ use App\Http\Controllers\ReadmeController;
 use App\Http\Controllers\StackItemController;
 use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\TaskController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+use Laravel\Fortify\Features;
 
-Route::inertia('/', 'Welcome')->name('home');
+Route::get('/', function (Request $request) {
+    if ($request->user()) {
+        return redirect()->route('dashboard');
+    }
+
+    return Inertia::render('auth/Login', [
+        'canResetPassword' => Features::enabled(Features::resetPasswords()),
+        'githubAuthEnabled' => filled(config('services.github.client_id')),
+        'status' => $request->session()->get('status'),
+    ]);
+})->name('home');
+
+Route::inertia('welcome', 'Welcome')->name('welcome');
 
 Route::get('demo', DemoLoginController::class)->name('demo.login');
 
