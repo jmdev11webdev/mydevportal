@@ -36,11 +36,7 @@ defineProps<{
                     :href="home()"
                     class="inline-flex items-center gap-2.5 font-semibold tracking-tight text-white transition hover:opacity-90"
                 >
-                    <span
-                        class="flex size-9 items-center justify-center rounded-xl bg-white text-slate-950 shadow-sm"
-                    >
-                        <AppLogoIcon class="size-5" />
-                    </span>
+                    <AppLogoIcon class="size-9 rounded-xl shadow-sm" />
                     <span class="text-base">MyDevPortal</span>
                 </Link>
 

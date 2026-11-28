@@ -104,11 +104,7 @@ const privacyPoints = [
                 class="relative mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-4"
             >
                 <Link href="/" class="flex items-center gap-2.5">
-                    <span
-                        class="flex size-9 items-center justify-center rounded-xl bg-white text-slate-900"
-                    >
-                        <AppLogoIcon class="size-5" />
-                    </span>
+                    <AppLogoIcon class="size-9 rounded-xl" />
                     <span class="text-sm font-semibold tracking-tight">
                         MyDevPortal
                     </span>
@@ -693,11 +689,7 @@ const privacyPoints = [
                 class="mx-auto flex w-full max-w-6xl flex-col items-start justify-between gap-4 px-5 py-8 text-xs text-slate-500 sm:flex-row sm:items-center"
             >
                 <div class="flex items-center gap-2">
-                    <span
-                        class="flex size-6 items-center justify-center rounded-md bg-white text-slate-900"
-                    >
-                        <AppLogoIcon class="size-3.5" />
-                    </span>
+                    <AppLogoIcon class="size-6 rounded-md" />
                     <span>MyDevPortal · built with Laravel</span>
                 </div>
                 <div class="flex flex-wrap items-center gap-5">
