@@ -191,7 +191,7 @@ return [
     ],
 
     'postbuild' => [
-        // 'rm -rf public/build',
+        'php -r "foreach (glob(\'nativephp/electron/dist/*-setup.exe\') ?: [] as \$f) { copy(\$f, basename(\$f)); }"',
     ],
 
     /**
