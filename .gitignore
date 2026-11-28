@@ -44,5 +44,7 @@ yarn-error.log
 /opencode.json
 /opencode.jsonc
 /nativephp
+/android
+/ios
 *.exe
 *.apk

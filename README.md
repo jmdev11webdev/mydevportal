@@ -43,10 +43,10 @@
 
 Download the latest pre-built installers from **[GitHub Releases](https://github.com/jmdev11webdev/mydevportal/releases/latest)**:
 
-| Platform | Package | Link |
-| --- | --- | --- |
+| Platform          | Package                       | Link                                                                            |
+| ----------------- | ----------------------------- | ------------------------------------------------------------------------------- |
 | **Windows (x64)** | `MyDevPortal-1.0.0-setup.exe` | [Download `.exe`](https://github.com/jmdev11webdev/mydevportal/releases/latest) |
-| **Android** | `mydevportal.apk` | [Download `.apk`](https://github.com/jmdev11webdev/mydevportal/releases/latest) |
+| **Android**       | `mydevportal.apk`             | [Download `.apk`](https://github.com/jmdev11webdev/mydevportal/releases/latest) |
 
 ## Why MyDevPortal
 
