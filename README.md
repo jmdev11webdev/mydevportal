@@ -30,6 +30,7 @@
 <p>
   <a href="#why-mydevportal">Why MyDevPortal</a> •
   <a href="#features">Features</a> •
+  <a href="#downloads">Downloads</a> •
   <a href="#tech-stack">Tech Stack</a> •
   <a href="#getting-started">Getting Started</a>
 </p>
@@ -37,6 +38,15 @@
 </div>
 
 ---
+
+## Downloads
+
+Download the latest pre-built installers from **[GitHub Releases](https://github.com/jmdev11webdev/mydevportal/releases/latest)**:
+
+| Platform | Package | Link |
+| --- | --- | --- |
+| **Windows (x64)** | `MyDevPortal-1.0.0-setup.exe` | [Download `.exe`](https://github.com/jmdev11webdev/mydevportal/releases/latest) |
+| **Android** | `mydevportal.apk` | [Download `.apk`](https://github.com/jmdev11webdev/mydevportal/releases/latest) |
 
 ## Why MyDevPortal
 
