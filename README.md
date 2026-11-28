@@ -29,133 +29,61 @@
 
 <p>
   <a href="#why-mydevportal">Why MyDevPortal</a> •
-  <a href="#screenshot-tour">Screenshot Tour</a> •
-  <a href="#feature-summary">Feature Summary</a> •
-  <a href="#-mydevportal-dashboarddocsscreenshotsdashboard-overviewpng">Preview</a>
+  <a href="#features">Features</a> •
+  <a href="#tech-stack">Tech Stack</a> •
+  <a href="#getting-started">Getting Started</a>
 </p>
 
 </div>
 
 ---
 
-![MyDevPortal dashboard](docs/screenshots/dashboard-overview.png)
-
 ## Why MyDevPortal
 
-- **One workspace, the whole loop** — plan a build, capture the next task, track what you are learning, keep private notes, and record career wins without juggling five apps.
-- **Private by default** — notes, applications, and goals are scoped to your account. There are no third-party scripts or trackers.
-- **Installable and offline-ready** — a web app manifest and service worker provide an app shell and an offline fallback page.
-- **Keyboard-friendly and fast** — Inertia-powered navigation with a compact, responsive interface.
+- **One workspace, the whole loop** — plan a build, capture the next task, track what you are learning, keep private notes, manage your pipeline, and record career wins without juggling five apps.
+- **Private & local-first** — notes, applications, leads, and goals are scoped to your account with SQLite WAL local storage by default and zero third-party trackers.
+- **Cross-platform ready** — runs as an installable, offline-ready PWA, a **NativePHP Desktop** app (`main` branch), or a **NativePHP Mobile** app (`mobile` branch).
+- **Keyboard-friendly and responsive** — Inertia-powered navigation with a compact desktop layout and mobile-first floating action buttons and modals.
 - **Sign in your way** — email and password, passkeys, two-factor authentication, or GitHub OAuth.
-- **Ship the docs too** — generate a README from any project, preview it live, and copy the markdown straight into your repository.
-- **Self-hostable** — a standard Laravel application with SQLite by default, so you can run it anywhere.
+- **Ship the docs too** — generate a README from any project, preview it live, and copy or download the markdown straight into your repository.
 
-## Screenshot tour
+## Features
 
-### 1. Dashboard
+### Build & Ship
+- **Dashboard** — Daily command center featuring *Your Developer HQ* quick task capture, an interactive *Overall Statistics* distribution pie chart, and a *This Week* shipping velocity chart.
+- **Projects** — Full project CRUD with status tracking (`Planning`, `Active`, `Paused`, `Completed`), color accents, repository and live URLs, target dates, task-based progress bars, and multi-select tech stacks.
+- **Tasks (Focus Board)** — Three-column board (`To do`, `In progress`, `Done`) with nested subtasks, priorities, due dates, project filtering, inline focus timers, and one-click completion.
+- **Interactive Calendar** — Unified Month and Agenda views connecting scheduled events, bundled event tasks and subtasks, project milestones, career targets, and a mobile day-workspace modal.
+- **Tech Stack Radar** — Personal inventory of languages, frameworks, databases, and hosting (including Devicon icons, Debian, Livewire, and Laravel Cloud) with custom stack naming, multi-select, and one-click presets (`TALL`, `VILT`, `RILT`, `MERN`, `MEAN`, `MEVN`, `PERN`, `LAMP`, `LEMP`, `T3`).
+- **README Generator** — Live-rendered markdown README builder with project presets, shields.io badges, copy/download/reset actions, and mobile-responsive layout.
 
-The dashboard is the daily starting point: open tasks, weekly output, active projects, learning progress, a career snapshot, and recent notes.
+### Growth & CRM
+- **Pipeline** — Spreadsheet-style outreach and client lead tracker with inline editing across `New`, `Contacted`, `Proposal`, `Won`, and `Lost` stages, deal value summaries, and mobile stage filtering.
+- **Career** — Private timeline for goals, job applications, achievements, and certifications with target dates and completion tracking.
+- **Learning** — Personal curriculum for courses, books, articles, videos, and documentation with status filters and 10% incremental progress logging.
+- **Overall Statistics** — Cross-portal analytics covering task completion rates, CRM pipeline win rate and stage values, 7-day execution velocity, project/career/stack totals, and cached GitHub Release download counts (`.exe` and `.apk`).
 
-![Dashboard overview](docs/screenshots/dashboard-overview.png)
-
-Below the fold, _Today's focus_ and _Active projects_ surface the work that needs attention now.
-
-![Dashboard focus and active projects](docs/screenshots/dashboard-focus.png)
-
-Tasks can be captured from the dashboard without leaving the page.
-
-![Quick task capture from the dashboard](docs/screenshots/dashboard-new-task.png)
-
-The same quick-capture flow works for private notes.
-
-![Quick note capture from the dashboard](docs/screenshots/dashboard-quick-note.png)
-
-### 2. Projects
-
-Every build, experiment, and long-running idea gets a home. Projects show status, accent colour, tech stack, target date, and task-based progress.
-
-![Projects overview](docs/screenshots/projects-overview.png)
-
-Create a project with a name, description, status, accent, tech stack, repository URL, live URL, and target date.
-
-![Create a project](docs/screenshots/projects-create.png)
-
-Edit a project as it evolves — status, links, and the target date stay in one place.
-
-![Edit a project](docs/screenshots/projects-edit.png)
-
-### 3. Tasks
-
-The focus board organises work into **To do**, **In progress**, and **Done**. Search, filter by project, complete tasks in one click, or move them between columns from the task menu.
-
-![Tasks focus board](docs/screenshots/tasks-board.png)
-
-New tasks can be created directly into the column you are working in, with a project, priority, and due date.
-
-![Create a task](docs/screenshots/tasks-create.png)
-
-### 4. Learning
-
-Track courses, books, articles, videos, and documentation in a personal curriculum. Filter by status, view average progress, and log progress in 10% increments.
-
-![Learning overview](docs/screenshots/learning-overview.png)
-
-Add a resource with a title, provider, URL, category, format, status, and initial progress.
-
-![Create a learning resource](docs/screenshots/learning-create.png)
-
-Update a resource's progress, status, and notes as you work through it. Reaching 100% marks it complete.
-
-![Edit a learning resource](docs/screenshots/learning-edit.png)
-
-### 5. Notes
-
-A private scratchpad for snippets, decisions, commands, and half-formed ideas. Pin important notes, search across content and tags, and colour-code them.
-
-![Notes overview](docs/screenshots/notes-overview.png)
-
-Each note exposes inline actions for editing, pinning, and deleting.
-
-![Note actions](docs/screenshots/notes-actions.png)
-
-Create a note with a title, body, tags, colour, and an optional pin.
-
-![Create a private note](docs/screenshots/notes-create.png)
-
-Edit a note in place — content, tags, colour, and pinned state.
-
-![Edit a private note](docs/screenshots/notes-edit.png)
-
-### 6. Career
-
-A quiet record of where you are going and what you have already proven. Goals, applications, achievements, and certifications live in one private timeline with target dates.
-
-![Career overview](docs/screenshots/career-overview.png)
-
-Add a career entry as a goal, application, achievement, or certification, with an organisation, status, target date, and description.
-
-![Create a career entry](docs/screenshots/career-create.png)
-
-### 7. README generator
-
-Turn any project into a polished README without leaving the portal. Start from scratch or prefill the form from an existing project, then edit the tagline, description, features, stack, installation steps, usage sample, links, and license.
-
-The preview updates as you type, and the generated markdown can be copied, downloaded as `README.md`, or reset. Shield badges are optional, and a GitHub repository URL adds a live stars badge automatically.
-
-Open **`/readme`** from the sidebar, or choose **Generate README** from a project's action menu to open it prefilled with that project's details.
+### Workspace & Care
+- **Notes** — Private scratchpad for snippets, decisions, and commands with search, tags, color coding, and pinning.
+- **20-20-20 Eye Care** — Built-in eye-care break timer synchronized with active focus duration timers across the dashboard and calendar.
 
 ## Feature summary
 
-| Module        | What it does                                                                                                                                                          |
-| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Dashboard** | Aggregates open tasks, weekly completions, focus streak, active projects, learning progress, career snapshot, and recent notes. Includes quick task and note capture. |
-| **Projects**  | Full CRUD, status and accent colour, tech stack, repository/live URLs, target dates, and task-completion progress.                                                    |
-| **Tasks**     | Three-column focus board, search, project filter, priorities, due dates, one-click completion, column moves, and full CRUD.                                           |
-| **Learning**  | Courses, books, articles, videos, and docs with provider, category, status, progress tracking, filters, and progress logging.                                         |
-| **Notes**     | Private notes with search, tags, colour coding, pinning, and full CRUD.                                                                                               |
-| **Career**    | Goals, applications, achievements, and certifications with status, organisation, target date, and completion tracking.                                                |
-| **README**    | Generates a markdown README from a form or an existing project, with live preview, optional shields.io badges, copy, download, and reset.                             |
-| **PWA**       | Web app manifest, installable icons, service worker caching, and an offline fallback page.                                                                            |
+| Module | What it delivers |
+| --- | --- |
+| **Dashboard** | Quick task/note capture, Overall Statistics pie chart, 7-day velocity chart, today's focus, and active projects. |
+| **Projects** | Full CRUD, status & accent color, multi-select tech stack, repo/live URLs, target dates, and task progress. |
+| **Tasks** | Three-column focus board, nested subtasks, priorities, due dates, focus timer, and calendar linking. |
+| **Calendar** | Month & Agenda views, bundled event tasks, project/career milestones, and mobile day modal. |
+| **Stack** | Personal tech radar with custom stack names, multi-select, and presets (`TALL`, `MERN`, `MEAN`, etc.). |
+| **README** | Live markdown README generator with project presets, Devicon badges, copy, download, and reset. |
+| **Pipeline** | Inline spreadsheet CRM for leads across `New`, `Contacted`, `Proposal`, `Won`, and `Lost` stages. |
+| **Career** | Goals, applications, achievements, and certifications with status and target-date tracking. |
+| **Learning** | Curriculum tracker for courses, books, and docs with status filters and 10% progress logging. |
+| **Statistics** | Cross-portal telemetry, CRM win rate, 7-day velocity, and GitHub Release `.exe` / `.apk` download counts. |
+| **Notes** | Private notes with search, tags, color coding, pinning, and full CRUD. |
+| **Eye Care** | 20-20-20 break timer synced with focus sessions. |
+| **PWA & NativePHP** | Offline-ready PWA, NativePHP Desktop (`main` branch), and NativePHP Mobile (`mobile` branch) on SQLite. |
 
 ## Tech stack
 
@@ -258,7 +186,6 @@ public/
   manifest.webmanifest       PWA manifest
   sw.js                      Service worker
   offline.html               Offline fallback
-docs/screenshots/            README screenshots
 ```
 
 ## Routes
