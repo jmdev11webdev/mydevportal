@@ -50,7 +50,8 @@
 ## Features
 
 ### Build & Ship
-- **Dashboard** — Daily command center featuring *Your Developer HQ* quick task capture, an interactive *Overall Statistics* distribution pie chart, and a *This Week* shipping velocity chart.
+
+- **Dashboard** — Daily command center featuring _Your Developer HQ_ quick task capture, an interactive _Overall Statistics_ distribution pie chart, and a _This Week_ shipping velocity chart.
 - **Projects** — Full project CRUD with status tracking (`Planning`, `Active`, `Paused`, `Completed`), color accents, repository and live URLs, target dates, task-based progress bars, and multi-select tech stacks.
 - **Tasks (Focus Board)** — Three-column board (`To do`, `In progress`, `Done`) with nested subtasks, priorities, due dates, project filtering, inline focus timers, and one-click completion.
 - **Interactive Calendar** — Unified Month and Agenda views connecting scheduled events, bundled event tasks and subtasks, project milestones, career targets, and a mobile day-workspace modal.
@@ -58,32 +59,34 @@
 - **README Generator** — Live-rendered markdown README builder with project presets, shields.io badges, copy/download/reset actions, and mobile-responsive layout.
 
 ### Growth & CRM
+
 - **Pipeline** — Spreadsheet-style outreach and client lead tracker with inline editing across `New`, `Contacted`, `Proposal`, `Won`, and `Lost` stages, deal value summaries, and mobile stage filtering.
 - **Career** — Private timeline for goals, job applications, achievements, and certifications with target dates and completion tracking.
 - **Learning** — Personal curriculum for courses, books, articles, videos, and documentation with status filters and 10% incremental progress logging.
 - **Overall Statistics** — Cross-portal analytics covering task completion rates, CRM pipeline win rate and stage values, 7-day execution velocity, project/career/stack totals, and cached GitHub Release download counts (`.exe` and `.apk`).
 
 ### Workspace & Care
+
 - **Notes** — Private scratchpad for snippets, decisions, and commands with search, tags, color coding, and pinning.
 - **20-20-20 Eye Care** — Built-in eye-care break timer synchronized with active focus duration timers across the dashboard and calendar.
 
 ## Feature summary
 
-| Module | What it delivers |
-| --- | --- |
-| **Dashboard** | Quick task/note capture, Overall Statistics pie chart, 7-day velocity chart, today's focus, and active projects. |
-| **Projects** | Full CRUD, status & accent color, multi-select tech stack, repo/live URLs, target dates, and task progress. |
-| **Tasks** | Three-column focus board, nested subtasks, priorities, due dates, focus timer, and calendar linking. |
-| **Calendar** | Month & Agenda views, bundled event tasks, project/career milestones, and mobile day modal. |
-| **Stack** | Personal tech radar with custom stack names, multi-select, and presets (`TALL`, `MERN`, `MEAN`, etc.). |
-| **README** | Live markdown README generator with project presets, Devicon badges, copy, download, and reset. |
-| **Pipeline** | Inline spreadsheet CRM for leads across `New`, `Contacted`, `Proposal`, `Won`, and `Lost` stages. |
-| **Career** | Goals, applications, achievements, and certifications with status and target-date tracking. |
-| **Learning** | Curriculum tracker for courses, books, and docs with status filters and 10% progress logging. |
-| **Statistics** | Cross-portal telemetry, CRM win rate, 7-day velocity, and GitHub Release `.exe` / `.apk` download counts. |
-| **Notes** | Private notes with search, tags, color coding, pinning, and full CRUD. |
-| **Eye Care** | 20-20-20 break timer synced with focus sessions. |
-| **PWA & NativePHP** | Offline-ready PWA, NativePHP Desktop (`main` branch), and NativePHP Mobile (`mobile` branch) on SQLite. |
+| Module              | What it delivers                                                                                                 |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **Dashboard**       | Quick task/note capture, Overall Statistics pie chart, 7-day velocity chart, today's focus, and active projects. |
+| **Projects**        | Full CRUD, status & accent color, multi-select tech stack, repo/live URLs, target dates, and task progress.      |
+| **Tasks**           | Three-column focus board, nested subtasks, priorities, due dates, focus timer, and calendar linking.             |
+| **Calendar**        | Month & Agenda views, bundled event tasks, project/career milestones, and mobile day modal.                      |
+| **Stack**           | Personal tech radar with custom stack names, multi-select, and presets (`TALL`, `MERN`, `MEAN`, etc.).           |
+| **README**          | Live markdown README generator with project presets, Devicon badges, copy, download, and reset.                  |
+| **Pipeline**        | Inline spreadsheet CRM for leads across `New`, `Contacted`, `Proposal`, `Won`, and `Lost` stages.                |
+| **Career**          | Goals, applications, achievements, and certifications with status and target-date tracking.                      |
+| **Learning**        | Curriculum tracker for courses, books, and docs with status filters and 10% progress logging.                    |
+| **Statistics**      | Cross-portal telemetry, CRM win rate, 7-day velocity, and GitHub Release `.exe` / `.apk` download counts.        |
+| **Notes**           | Private notes with search, tags, color coding, pinning, and full CRUD.                                           |
+| **Eye Care**        | 20-20-20 break timer synced with focus sessions.                                                                 |
+| **PWA & NativePHP** | Offline-ready PWA, NativePHP Desktop (`main` branch), and NativePHP Mobile (`mobile` branch) on SQLite.          |
 
 ## Tech stack
 
